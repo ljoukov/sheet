@@ -1,0 +1,106 @@
+{
+	"name": "@ljoukov/sheet",
+	"version": "0.1.0",
+	"description": "Svelte components for paper-style worksheets, reviewed answer sheets, and question-level feedback threads.",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ljoukov/sheet.git"
+	},
+	"bugs": "https://github.com/ljoukov/sheet/issues",
+	"homepage": "https://github.com/ljoukov/sheet#readme",
+	"author": "Liudmila Joukovskaya",
+	"type": "module",
+	"workspaces": [
+		"examples/gallery"
+	],
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build && npm run package",
+		"preview": "vite preview",
+		"package": "svelte-kit sync && svelte-package && publint",
+		"prepare": "svelte-kit sync || echo ''",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"lint": "prettier --check . && eslint src eslint.config.js svelte.config.js vite.config.ts && npm run --workspace examples/gallery lint",
+		"format": "prettier --write . && npm run --workspace examples/gallery format",
+		"test:unit": "vitest",
+		"test": "npm run test:unit -- --run",
+		"gallery:dev": "npm run --workspace examples/gallery dev",
+		"gallery:check": "npm run --workspace examples/gallery check",
+		"gallery:build": "npm run --workspace examples/gallery build",
+		"verify": "npm run lint && npm run check && npm run test && npm run build && npm run gallery:check && npm run gallery:build",
+		"prepack": "npm run verify"
+	},
+	"files": [
+		"dist",
+		"!dist/**/*.test.*",
+		"!dist/**/*.spec.*",
+		"src/lib",
+		"!src/lib/**/*.test.*",
+		"!src/lib/**/*.spec.*"
+	],
+	"sideEffects": [
+		"**/*.css"
+	],
+	"svelte": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"svelte": "./dist/index.js"
+		},
+		"./styles.css": "./dist/styles.css"
+	},
+	"engines": {
+		"node": ">=22"
+	},
+	"peerDependencies": {
+		"svelte": "^5.0.0"
+	},
+	"dependencies": {
+		"@lucide/svelte": "^0.562.0",
+		"esm-env": "^1.2.2",
+		"highlight.js": "^11.11.1",
+		"katex": "^0.16.27",
+		"marked": "^17.0.5",
+		"marked-katex-extension": "^5.1.7",
+		"zod": "^4.3.6"
+	},
+	"devDependencies": {
+		"@eslint/compat": "^2.0.3",
+		"@eslint/js": "^10.0.1",
+		"@sveltejs/adapter-auto": "^7.0.0",
+		"@sveltejs/kit": "^2.50.2",
+		"@sveltejs/package": "^2.5.7",
+		"@sveltejs/vite-plugin-svelte": "^6.2.4",
+		"@types/node": "^24",
+		"@vitest/browser-playwright": "^4.1.0",
+		"eslint": "^10.0.3",
+		"eslint-plugin-svelte": "^3.15.2",
+		"globals": "^17.4.0",
+		"playwright": "^1.58.2",
+		"prettier": "^3.8.1",
+		"prettier-plugin-svelte": "^3.4.1",
+		"publint": "^0.3.17",
+		"svelte": "^5.54.0",
+		"svelte-check": "^4.4.2",
+		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.57.0",
+		"vite": "^7.3.1",
+		"vitest": "^4.1.0",
+		"vitest-browser-svelte": "^2.0.2"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"keywords": [
+		"svelte",
+		"sveltekit",
+		"worksheet",
+		"paper",
+		"feedback",
+		"assessment",
+		"education"
+	]
+}

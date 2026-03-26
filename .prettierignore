@@ -1,0 +1,32 @@
+# Package Managers
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+bun.lock
+bun.lockb
+
+# Dependencies
+node_modules
+node_modules/**
+**/node_modules/**
+
+# Build output
+.svelte-kit
+.svelte-kit/**
+**/.svelte-kit
+**/.svelte-kit/**
+build
+build/**
+**/build
+**/build/**
+dist
+dist/**
+**/dist
+**/dist/**
+coverage
+coverage/**
+**/coverage
+**/coverage/**
+
+# Miscellaneous
+static
