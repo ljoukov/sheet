@@ -29,7 +29,8 @@
 		</ul>
 
 		<p class="package-home__hint">
-			Use the gallery app in <code>examples/gallery</code> for live demos and screenshot capture.
+			Use the gallery app in <code>examples/gallery</code> for live demos, including isolated
+			<code>/render/*</code> routes for screenshot capture.
 		</p>
 	</div>
 </main>

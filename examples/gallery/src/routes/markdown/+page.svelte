@@ -1,33 +1,6 @@
 <script lang="ts">
 	import { Markdown } from '@ljoukov/sheet';
-
-	const blockMarkdown = `
-# Worked example
-
-The remainder is **43**, so we know:
-
-$$
-2023 - 43 = 1980
-$$
-
-That means \`n\` must divide \`1980\`.
-
-## Strategy
-
-1. Factorise \`1980\`
-2. List factors greater than 43
-3. Check that each factor gives remainder 43
-
-> The cleanest final sentence is the one that repeats the corrected count.
-
-\`\`\`ts
-const factors = [44, 45, 55, 60, 66];
-console.log(factors.length);
-\`\`\`
-`;
-
-	const inlineMarkdown =
-		'Inline maths like `$F = ma$` and code like `const x = 19` should stay readable.';
+	import { markdownStates } from '$lib/gallery/component-demos.js';
 </script>
 
 <div class="gallery-page">
@@ -50,7 +23,7 @@ console.log(factors.length);
 				</div>
 			</div>
 			<div class="gallery-frame">
-				<Markdown markdown={blockMarkdown} />
+				<Markdown markdown={markdownStates.block.markdown} />
 			</div>
 		</div>
 
@@ -66,7 +39,7 @@ console.log(factors.length);
 			<div class="gallery-frame">
 				<div class="gallery-inline-preview">
 					<div class="gallery-inline-chip">
-						<Markdown markdown={inlineMarkdown} inline={true} />
+						<Markdown markdown={markdownStates.inline.markdown} inline={true} />
 					</div>
 				</div>
 			</div>

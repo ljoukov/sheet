@@ -1,23 +1,8 @@
 <script lang="ts">
 	import { SheetFeedbackThread } from '@ljoukov/sheet';
+	import { feedbackThreadStates } from '$lib/gallery/component-demos.js';
 
 	let draft = $state('');
-
-	const thread = {
-		status: 'open' as const,
-		turns: [
-			{
-				id: 'student-1',
-				speaker: 'student' as const,
-				text: 'I know 1980 is divisible by 44, 45, 55, 60 and more, but I am not sure if I counted every factor above 43.'
-			},
-			{
-				id: 'tutor-1',
-				speaker: 'tutor' as const,
-				text: 'Keep the divisor idea. Recount them in increasing order and check whether each pair gives you a new value.'
-			}
-		]
-	};
 </script>
 
 <div class="gallery-page">
@@ -43,7 +28,7 @@
 
 			<div class="gallery-frame">
 				<SheetFeedbackThread
-					{thread}
+					thread={feedbackThreadStates.open.thread}
 					{draft}
 					questionLabel="divisor count"
 					onDraftChange={(value) => {
@@ -65,20 +50,11 @@
 
 			<div class="gallery-frame">
 				<SheetFeedbackThread
-					thread={{
-						status: 'responding',
-						turns: [
-							{
-								id: 'student-2',
-								speaker: 'student',
-								text: 'Can you check whether 44 belongs in the count?'
-							}
-						]
-					}}
+					thread={feedbackThreadStates.responding.thread}
 					draft=""
 					questionLabel="divisor count"
-					thinkingText="The condition is `n > 43`, so **44** is definitely valid."
-					assistantDraftText="Yes. `44` divides `1980`, and because the condition is `n > 43`, it should be included in the final list."
+					thinkingText={feedbackThreadStates.responding.thinkingText}
+					assistantDraftText={feedbackThreadStates.responding.assistantDraftText}
 				/>
 			</div>
 		</div>

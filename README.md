@@ -2,7 +2,7 @@
 
 Paper-first Svelte components for rendering printable-style worksheets, reviewed answer sheets, rich tutor feedback cards, and reply threads.
 
-The package is built for Svelte 5 component-library usage and ships with a SvelteKit gallery app under [`examples/gallery`](examples/gallery) for visual review and screenshot capture.
+The package is built for Svelte 5 component-library usage and ships with a SvelteKit gallery app under [`examples/gallery`](examples/gallery) for route-level visual review plus isolated `/render/*` capture surfaces for documentation screenshots.
 
 ## What It Includes
 
@@ -44,7 +44,7 @@ For live tutoring flows, pass `review`, `feedbackThreads`, `feedbackState`, and 
 
 ## Gallery
 
-The repo includes a SvelteKit gallery app for full-sheet routes and isolated component demos.
+The repo includes a SvelteKit gallery app for full-sheet routes, component demos, and isolated render routes that show exactly one component per screen.
 
 The gallery shell follows a Tailwind v4 and `shadcn-svelte`-style setup with a local [`components.json`](examples/gallery/components.json) so future demo surfaces can adopt the same conventions.
 
@@ -66,24 +66,69 @@ Useful routes:
 - `/questions/calc`
 - `/questions/match`
 - `/questions/spelling`
+- `/render`
+- `/render/sheet?theme=light&state=roman`
+- `/render/feedback-card?theme=dark&state=open`
+- `/render/feedback-thread?theme=light&state=open`
+- `/render/markdown?theme=dark&state=block`
+
+For screenshot work, prefer the isolated render routes over the gallery pages. Each `/render/<component>` path accepts:
+
+- `theme=light|dark`
+- `state=<variant>`
+
+Supported states:
+
+- `sheet`: `roman`, `iron`, `english`
+- `feedback-card`: `pending`, `open`, `thinking`, `resolved`
+- `feedback-thread`: `open`, `responding`
+- `markdown`: `block`, `inline`
+
+Typical capture flow:
+
+```sh
+npm install
+npm run gallery:dev
+
+agent-browser --session readme-card open '<gallery-url>/render/feedback-card?theme=dark&state=open'
+agent-browser --session readme-card wait --load networkidle
+agent-browser --session readme-card set viewport 1100 720 2
+agent-browser --session readme-card screenshot '[data-screenshot-target="feedback-card"]' docs/screenshots/render-feedback-card-dark.png
+```
+
+Replace `<gallery-url>` with the local address printed by `npm run gallery:dev`.
 
 ## Screenshots
 
-Overview
+The screenshots below come from the isolated render routes, not the gallery shell.
 
-![Overview](docs/screenshots/overview.png)
+### `Sheet` (`state=roman`)
 
-Whole worksheet
+<p>
+  <img src="docs/screenshots/render-sheet-light.png" alt="Sheet component in light mode" width="49%" />
+  <img src="docs/screenshots/render-sheet-dark.png" alt="Sheet component in dark mode" width="49%" />
+</p>
 
-![Worksheet demo](docs/screenshots/worksheet-roman.png)
+### `SheetFeedbackCard` (`state=open`)
 
-Feedback cards
+<p>
+  <img src="docs/screenshots/render-feedback-card-light.png" alt="Feedback card component in light mode" width="49%" />
+  <img src="docs/screenshots/render-feedback-card-dark.png" alt="Feedback card component in dark mode" width="49%" />
+</p>
 
-![Feedback cards](docs/screenshots/feedback-cards.png)
+### `SheetFeedbackThread` (`state=open`)
 
-Question demo
+<p>
+  <img src="docs/screenshots/render-feedback-thread-light.png" alt="Feedback thread component in light mode" width="49%" />
+  <img src="docs/screenshots/render-feedback-thread-dark.png" alt="Feedback thread component in dark mode" width="49%" />
+</p>
 
-![Match question](docs/screenshots/question-match.png)
+### `Markdown` (`state=block`)
+
+<p>
+  <img src="docs/screenshots/render-markdown-light.png" alt="Markdown component in light mode" width="49%" />
+  <img src="docs/screenshots/render-markdown-dark.png" alt="Markdown component in dark mode" width="49%" />
+</p>
 
 ## Development
 

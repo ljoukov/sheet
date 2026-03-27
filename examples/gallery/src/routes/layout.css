@@ -35,7 +35,8 @@
 	--radius-xl: calc(var(--radius) + 4px);
 }
 
-:root {
+:root,
+.theme-light {
 	--background: oklch(1 0 0);
 	--foreground: oklch(0.141 0.005 285.823);
 	--card: oklch(1 0 0);
@@ -65,7 +66,8 @@
 	--sidebar-ring: oklch(0.705 0.015 286.067);
 }
 
-.dark {
+.dark,
+.theme-dark {
 	--background: oklch(0.141 0.005 285.823);
 	--foreground: oklch(0.985 0 0);
 	--card: oklch(0.21 0.006 285.885);
@@ -104,11 +106,13 @@
 		@apply min-h-full;
 	}
 
-	html {
+	html,
+	.theme-light {
 		color-scheme: light;
 	}
 
-	html.dark {
+	html.dark,
+	.theme-dark {
 		color-scheme: dark;
 	}
 

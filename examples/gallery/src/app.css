@@ -108,7 +108,7 @@
 }
 
 .gallery-page__title {
-	@apply max-w-[18ch] text-3xl font-semibold tracking-tight text-balance;
+	@apply text-3xl font-semibold tracking-tight text-balance;
 }
 
 .gallery-page__description {
@@ -206,6 +206,61 @@
 	@apply inline-flex items-center gap-2 rounded-md border bg-background px-3 py-2;
 }
 
+.gallery-render {
+	@apply w-full bg-background px-5 py-6 text-foreground;
+	display: grid;
+	place-items: start center;
+}
+
+.gallery-render__panel {
+	width: min(100%, 44rem);
+	box-sizing: border-box;
+	padding: 0.75rem;
+}
+
+.gallery-render__panel--sheet {
+	width: min(100%, 104rem);
+}
+
+.gallery-render__panel--thread,
+.gallery-render__panel--markdown {
+	width: min(100%, 52rem);
+}
+
+.gallery-render__panel--sheet > :global(*) {
+	min-width: 980px;
+}
+
+.gallery-render__markdown-surface {
+	@apply rounded-2xl border bg-card px-6 py-5 text-card-foreground shadow-sm;
+}
+
+.gallery-render__markdown-surface.is-inline {
+	@apply inline-flex items-center rounded-xl px-4 py-3;
+}
+
+.gallery-render__docs {
+	@apply grid w-full max-w-3xl gap-5 rounded-2xl border bg-card p-6 text-card-foreground shadow-sm;
+}
+
+.gallery-render__docs-title {
+	@apply text-2xl font-semibold tracking-tight;
+}
+
+.gallery-render__docs-copy {
+	@apply text-sm leading-6 text-muted-foreground;
+}
+
+:global(body:has(.gallery-render.theme-light)) {
+	background: oklch(1 0 0);
+	color: oklch(0.141 0.005 285.823);
+}
+
+:global(body:has(.gallery-render.theme-dark)) {
+	background: oklch(0.141 0.005 285.823);
+	color: oklch(0.985 0 0);
+}
+
 @media (min-width: 640px) {
 	.gallery-list__item {
 		grid-template-columns: minmax(0, 1fr) auto;
@@ -214,6 +269,10 @@
 
 	.gallery-page__description {
 		@apply text-base;
+	}
+
+	.gallery-render {
+		@apply px-8 py-8;
 	}
 }
 
