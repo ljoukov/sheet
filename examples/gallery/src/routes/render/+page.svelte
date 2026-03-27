@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { questionKinds } from '$lib/gallery/data.js';
 
 	const renderRoutes = [
 		{
@@ -25,12 +26,21 @@
 			path: '/render/markdown',
 			query: 'theme=light&state=block',
 			states: ['block', 'inline']
+		},
+		{
+			component: 'question',
+			path: '/render/question/[kind]',
+			query: 'theme=light',
+			states: [...questionKinds]
 		}
 	] as const;
 
 	const renderRouteLinks = renderRoutes.map((route) => ({
 		...route,
-		href: `${resolve(route.path)}?${route.query}`
+		href:
+			route.component === 'question'
+				? `${resolve('/render/question/[kind]', { kind: questionKinds[0] })}?${route.query}`
+				: `${resolve(route.path)}?${route.query}`
 	}));
 </script>
 
@@ -43,9 +53,9 @@
 	<div class="gallery-render__docs">
 		<h1 class="gallery-render__docs-title">Component render routes</h1>
 		<p class="gallery-render__docs-copy">
-			Each route renders a single exported component with no gallery sidebar or header chrome. Use
-			the <code>theme</code> query param for light or dark mode and <code>state</code> to select the demo
-			variant.
+			Each route renders a single capture surface with no gallery sidebar or header chrome. Use the
+			<code>theme</code> query param for light or dark mode, the <code>state</code> query param for
+			component variants, and the question <code>kind</code> path segment for focused one-question demos.
 		</p>
 
 		<div class="gallery-list">

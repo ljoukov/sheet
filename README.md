@@ -10,6 +10,7 @@ The package is built for Svelte 5 component-library usage and ships with a Svelt
 - `SheetFeedbackCard`: question-level review note with optional reply flow
 - `SheetFeedbackThread`: standalone tutor thread and composer surface
 - `Markdown`: shared markdown renderer with KaTeX maths and syntax highlighting
+- built-in question layouts for fill-in, multiple choice, lines, calculation, matching, and spelling prompts
 - typed schemas, exported types, and seeded sample documents for local demos
 
 ## Install
@@ -71,18 +72,25 @@ Useful routes:
 - `/render/feedback-card?theme=dark&state=open`
 - `/render/feedback-thread?theme=light&state=open`
 - `/render/markdown?theme=dark&state=block`
+- `/render/question/fill?theme=light`
+- `/render/question/mcq?theme=light`
+- `/render/question/lines?theme=light`
+- `/render/question/calc?theme=light`
+- `/render/question/match?theme=light`
+- `/render/question/spelling?theme=light`
 
-For screenshot work, prefer the isolated render routes over the gallery pages. Each `/render/<component>` path accepts:
+For screenshot work, prefer the isolated render routes over the gallery pages. Each render route accepts `theme=light|dark`. Routes with multiple named demo variants also accept `state=<variant>`, while question examples use the `kind` path segment:
 
-- `theme=light|dark`
-- `state=<variant>`
+- `/render/question/fill?theme=light`
+- `/render/question/mcq?theme=dark`
 
-Supported states:
+Supported demo variants:
 
 - `sheet`: `roman`, `iron`, `english`
 - `feedback-card`: `pending`, `open`, `thinking`, `resolved`
 - `feedback-thread`: `open`, `responding`
 - `markdown`: `block`, `inline`
+- `question kind`: `fill`, `mcq`, `lines`, `calc`, `match`, `spelling`
 
 Typical capture flow:
 
@@ -102,32 +110,74 @@ Replace `<gallery-url>` with the local address printed by `npm run gallery:dev`.
 
 The screenshots below come from the isolated render routes, not the gallery shell.
 
-### `Sheet` (`state=roman`)
+### Example sheet
 
 <p>
   <img src="docs/screenshots/render-sheet-light.png" alt="Sheet component in light mode" width="49%" />
   <img src="docs/screenshots/render-sheet-dark.png" alt="Sheet component in dark mode" width="49%" />
 </p>
 
-### `SheetFeedbackCard` (`state=open`)
+### Feedback card example
 
 <p>
   <img src="docs/screenshots/render-feedback-card-light.png" alt="Feedback card component in light mode" width="49%" />
   <img src="docs/screenshots/render-feedback-card-dark.png" alt="Feedback card component in dark mode" width="49%" />
 </p>
 
-### `SheetFeedbackThread` (`state=open`)
+### Feedback thread example
 
 <p>
   <img src="docs/screenshots/render-feedback-thread-light.png" alt="Feedback thread component in light mode" width="49%" />
   <img src="docs/screenshots/render-feedback-thread-dark.png" alt="Feedback thread component in dark mode" width="49%" />
 </p>
 
-### `Markdown` (`state=block`)
+### Markdown example
 
 <p>
   <img src="docs/screenshots/render-markdown-light.png" alt="Markdown component in light mode" width="49%" />
   <img src="docs/screenshots/render-markdown-dark.png" alt="Markdown component in dark mode" width="49%" />
+</p>
+
+### Fill-in question example
+
+<p>
+  <img src="docs/screenshots/render-question-fill-light.png" alt="Fill-in question example in light mode" width="49%" />
+  <img src="docs/screenshots/render-question-fill-dark.png" alt="Fill-in question example in dark mode" width="49%" />
+</p>
+
+### Multiple choice question example
+
+<p>
+  <img src="docs/screenshots/render-question-mcq-light.png" alt="Multiple choice question example in light mode" width="49%" />
+  <img src="docs/screenshots/render-question-mcq-dark.png" alt="Multiple choice question example in dark mode" width="49%" />
+</p>
+
+### Lines question example
+
+<p>
+  <img src="docs/screenshots/render-question-lines-light.png" alt="Lines question example in light mode" width="49%" />
+  <img src="docs/screenshots/render-question-lines-dark.png" alt="Lines question example in dark mode" width="49%" />
+</p>
+
+### Calculation question example
+
+<p>
+  <img src="docs/screenshots/render-question-calc-light.png" alt="Calculation question example in light mode" width="49%" />
+  <img src="docs/screenshots/render-question-calc-dark.png" alt="Calculation question example in dark mode" width="49%" />
+</p>
+
+### Matching question example
+
+<p>
+  <img src="docs/screenshots/render-question-match-light.png" alt="Matching question example in light mode" width="49%" />
+  <img src="docs/screenshots/render-question-match-dark.png" alt="Matching question example in dark mode" width="49%" />
+</p>
+
+### Spelling question example
+
+<p>
+  <img src="docs/screenshots/render-question-spelling-light.png" alt="Spelling question example in light mode" width="49%" />
+  <img src="docs/screenshots/render-question-spelling-dark.png" alt="Spelling question example in dark mode" width="49%" />
 </p>
 
 ## Development

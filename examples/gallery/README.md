@@ -18,5 +18,11 @@ Examples:
 - `/render/feedback-card?theme=dark&state=open`
 - `/render/feedback-thread?theme=light&state=open`
 - `/render/markdown?theme=dark&state=block`
+- `/render/question/fill?theme=light`
+- `/render/question/mcq?theme=light`
+- `/render/question/lines?theme=light`
+- `/render/question/calc?theme=light`
+- `/render/question/match?theme=light`
+- `/render/question/spelling?theme=light`
 
-Each render route accepts `theme=light|dark` plus a component-specific `state` query param.
+Each render route accepts `theme=light|dark`. Routes with named variants also accept a component-specific `state` query param, while question examples use `/render/question/<kind>`.
