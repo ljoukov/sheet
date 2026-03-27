@@ -27,12 +27,14 @@
 			</div>
 
 			<div class="gallery-canvas gallery-canvas--sheet">
-				<Sheet
-					document={demo.sheet}
-					seedAnswers={demo.seedAnswers}
-					mode="demo"
-					allowReplies={true}
-				/>
+				{#key demo.sheet.id}
+					<Sheet
+						document={demo.sheet}
+						seedAnswers={demo.seedAnswers}
+						mode="demo"
+						allowReplies={true}
+					/>
+				{/key}
 			</div>
 		</section>
 	</div>
