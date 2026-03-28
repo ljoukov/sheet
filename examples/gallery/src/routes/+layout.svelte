@@ -28,6 +28,59 @@
 		return page.url.pathname === href || page.url.pathname.startsWith(`${href}/`);
 	}
 
+	function toTitle(segment: string): string {
+		return segment
+			.split('-')
+			.map((part) => (part ? part[0]!.toUpperCase() + part.slice(1) : ''))
+			.join(' ');
+	}
+
+	type Crumb = {
+		label: string;
+		href: string | null;
+	};
+
+	const breadcrumbs = $derived.by((): Crumb[] => {
+		const pathname = page.url.pathname;
+		const items: Crumb[] = [{ label: 'Gallery', href: resolve('/') }];
+
+		if (pathname === '/') {
+			return items;
+		}
+
+		const matchedNav = [...galleryNavigation]
+			.map((item) => ({
+				label: item.label,
+				href: resolve(item.href)
+			}))
+			.filter((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))
+			.sort((a, b) => b.href.length - a.href.length)[0];
+
+		const consumedParts = matchedNav ? matchedNav.href.split('/').filter(Boolean) : [];
+		const pathParts = pathname.split('/').filter(Boolean);
+
+		if (matchedNav && matchedNav.href !== resolve('/')) {
+			items.push({ label: matchedNav.label, href: matchedNav.href });
+		}
+
+		for (let index = consumedParts.length; index < pathParts.length; index += 1) {
+			const href = `/${pathParts.slice(0, index + 1).join('/')}`;
+			items.push({
+				label: toTitle(pathParts[index] ?? ''),
+				href: index === pathParts.length - 1 ? null : href
+			});
+		}
+
+		if (items.length > 0) {
+			items[items.length - 1] = {
+				...items[items.length - 1],
+				href: null
+			};
+		}
+
+		return items;
+	});
+
 	function toggleSidebar(): void {
 		sidebarOpen = !sidebarOpen;
 	}
@@ -102,6 +155,30 @@
 					<PanelLeftIcon class="gallery-sidebar-trigger__icon" aria-hidden="true" />
 					<span class="sr-only">{sidebarOpen ? 'Hide sidebar' : 'Show sidebar'}</span>
 				</button>
+
+				<div class="gallery-main__bar-separator" aria-hidden="true"></div>
+
+				<nav class="gallery-breadcrumb" aria-label="Current path">
+					<ol class="gallery-breadcrumb__list">
+						{#each breadcrumbs as crumb, index (crumb.label + ':' + index)}
+							<li class={`gallery-breadcrumb__item ${index === 0 ? 'is-root' : ''}`}>
+								{#if crumb.href}
+									<a class="gallery-breadcrumb__link" href={crumb.href}>{crumb.label}</a>
+								{:else}
+									<span class="gallery-breadcrumb__page">{crumb.label}</span>
+								{/if}
+							</li>
+							{#if index < breadcrumbs.length - 1}
+								<li
+									class={`gallery-breadcrumb__separator ${index === 0 ? 'is-after-root' : ''}`}
+									aria-hidden="true"
+								>
+									/
+								</li>
+							{/if}
+						{/each}
+					</ol>
+				</nav>
 			</div>
 
 			<div class="gallery-main__content">{@render children()}</div>

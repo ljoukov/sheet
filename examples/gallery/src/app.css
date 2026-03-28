@@ -76,6 +76,10 @@
 	@apply sticky top-0 z-20 flex items-center border-b bg-background/95 px-4 py-3 backdrop-blur;
 }
 
+.gallery-main__bar-separator {
+	@apply mx-3 h-4 w-px shrink-0 bg-border;
+}
+
 .gallery-sidebar-trigger {
 	@apply inline-flex items-center justify-center rounded-md border bg-background text-muted-foreground shadow-xs transition-colors hover:bg-accent hover:text-accent-foreground;
 	width: 2rem;
@@ -85,6 +89,38 @@
 .gallery-sidebar-trigger__icon {
 	width: 1rem;
 	height: 1rem;
+}
+
+.gallery-breadcrumb {
+	@apply min-w-0;
+}
+
+.gallery-breadcrumb__list {
+	@apply flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground sm:gap-2.5;
+}
+
+.gallery-breadcrumb__item {
+	@apply min-w-0;
+}
+
+.gallery-breadcrumb__item.is-root {
+	@apply hidden md:block;
+}
+
+.gallery-breadcrumb__link {
+	@apply transition-colors hover:text-foreground;
+}
+
+.gallery-breadcrumb__page {
+	@apply text-foreground;
+}
+
+.gallery-breadcrumb__separator {
+	@apply text-muted-foreground/70;
+}
+
+.gallery-breadcrumb__separator.is-after-root {
+	@apply hidden md:block;
 }
 
 .gallery-main__content {
