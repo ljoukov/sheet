@@ -10,6 +10,12 @@
 			states: ['roman', 'iron', 'english']
 		},
 		{
+			component: 'grading-summary',
+			path: '/render/grading-summary',
+			query: 'theme=light',
+			states: ['default']
+		},
+		{
 			component: 'feedback-card',
 			path: '/render/feedback-card',
 			query: 'theme=light&state=open',

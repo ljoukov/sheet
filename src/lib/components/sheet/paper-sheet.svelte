@@ -1153,6 +1153,7 @@
 				class="paper-sheet__score-card"
 				style={`background:${scoreTone.background}; border-color:${scoreTone.border};`}
 				aria-label="Worksheet review summary"
+				data-screenshot-target="grading-summary"
 			>
 				<div class="paper-sheet__score-head">
 					<div class="paper-sheet__score-copy">

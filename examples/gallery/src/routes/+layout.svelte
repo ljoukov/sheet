@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { BROWSER } from 'esm-env';
 	import PanelLeftIcon from '@lucide/svelte/icons/panel-left';
 	import './layout.css';
 	import '../../../../src/lib/styles.css';
@@ -15,6 +16,9 @@
 	const isRenderRoute = $derived(
 		page.url.pathname === '/render' || page.url.pathname.startsWith('/render/')
 	);
+	const renderTheme = $derived(
+		isRenderRoute ? (page.url.searchParams.get('theme') === 'dark' ? 'dark' : 'light') : null
+	);
 
 	function isActive(href: string): boolean {
 		if (href === '/') {
@@ -27,11 +31,33 @@
 	function toggleSidebar(): void {
 		sidebarOpen = !sidebarOpen;
 	}
+
+	$effect(() => {
+		if (!BROWSER || renderTheme === null) {
+			return;
+		}
+
+		const html = document.documentElement;
+		const body = document.body;
+		const previousHtmlDark = html.classList.contains('dark');
+		const previousBodyDark = body.classList.contains('dark');
+		const shouldUseDark = renderTheme === 'dark';
+
+		html.classList.toggle('dark', shouldUseDark);
+		body.classList.toggle('dark', shouldUseDark);
+
+		return () => {
+			html.classList.toggle('dark', previousHtmlDark);
+			body.classList.toggle('dark', previousBodyDark);
+		};
+	});
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 
-<ModeWatcher defaultMode="system" disableTransitions />
+{#if !isRenderRoute}
+	<ModeWatcher defaultMode="system" disableTransitions />
+{/if}
 
 {#if isRenderRoute}
 	{@render children()}

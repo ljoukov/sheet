@@ -26,7 +26,7 @@
 		"format": "prettier --write . && npm run --workspace examples/gallery format",
 		"test:unit": "vitest",
 		"test": "npm run test:unit -- --run",
-		"gallery:dev": "npm run --workspace examples/gallery dev --",
+		"gallery:dev": "node ./scripts/run-gallery-dev.mjs",
 		"gallery:check": "npm run --workspace examples/gallery check",
 		"gallery:build": "npm run --workspace examples/gallery build",
 		"verify": "npm run lint && npm run check && npm run test && npm run build && npm run gallery:check && npm run gallery:build",

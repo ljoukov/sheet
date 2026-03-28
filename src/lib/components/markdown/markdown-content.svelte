@@ -124,10 +124,38 @@
 		color: var(--markdown-text, inherit);
 		font-size: inherit;
 		line-height: inherit;
+		--markdown-inline-code-bg-default: #eef2f7;
+		--markdown-inline-code-text-default: #1f2937;
+		--markdown-code-bg-default: #f8fafc;
+		--markdown-code-header-bg-default: #eef2f7;
+		--markdown-code-border-default: rgba(148, 163, 184, 0.35);
+		--markdown-code-text-default: #0f172a;
+		--markdown-code-muted-default: #64748b;
+		--markdown-code-keyword-default: #7c3aed;
+		--markdown-code-string-default: #047857;
+		--markdown-code-number-default: #b45309;
+		--markdown-code-function-default: #2563eb;
+		--markdown-code-type-default: #be185d;
 	}
 
 	.markdown-content.is-inline {
 		display: inline;
+	}
+
+	:global([data-theme='dark'] .markdown-content),
+	:global(.dark .markdown-content) {
+		--markdown-inline-code-bg-default: color-mix(in srgb, currentColor 12%, transparent);
+		--markdown-inline-code-text-default: currentColor;
+		--markdown-code-bg-default: #0f172a;
+		--markdown-code-header-bg-default: #162033;
+		--markdown-code-border-default: #273449;
+		--markdown-code-text-default: #e2e8f0;
+		--markdown-code-muted-default: #94a3b8;
+		--markdown-code-keyword-default: #c084fc;
+		--markdown-code-string-default: #34d399;
+		--markdown-code-number-default: #fbbf24;
+		--markdown-code-function-default: #60a5fa;
+		--markdown-code-type-default: #f472b6;
 	}
 
 	:global(.markdown-content > * + *) {
@@ -221,8 +249,8 @@
 	:global(.markdown-content :not(pre) > code) {
 		padding: 0.1rem 0.3rem;
 		border-radius: 0.3rem;
-		background: var(--markdown-inline-code-bg, color-mix(in srgb, currentColor 12%, transparent));
-		color: var(--markdown-inline-code-text, currentColor);
+		background: var(--markdown-inline-code-bg, var(--markdown-inline-code-bg-default));
+		color: var(--markdown-inline-code-text, var(--markdown-inline-code-text-default));
 		font-family: 'JetBrains Mono', 'Fira Code', Consolas, 'Liberation Mono', Menlo, monospace;
 		font-size: 0.85em;
 	}
@@ -236,9 +264,9 @@
 	:global(.markdown-content .code-block) {
 		margin: 0.85rem 0;
 		overflow: hidden;
-		border: 1px solid var(--markdown-code-border, #273449);
+		border: 1px solid var(--markdown-code-border, var(--markdown-code-border-default));
 		border-radius: 0.75rem;
-		background: var(--markdown-code-bg, #0f172a);
+		background: var(--markdown-code-bg, var(--markdown-code-bg-default));
 		box-shadow: 0 16px 30px -28px rgba(15, 23, 42, 0.25);
 	}
 
@@ -248,8 +276,8 @@
 		justify-content: space-between;
 		gap: 1rem;
 		padding: 0.45rem 0.75rem;
-		border-bottom: 1px solid var(--markdown-code-border, #273449);
-		background: var(--markdown-code-header-bg, #162033);
+		border-bottom: 1px solid var(--markdown-code-border, var(--markdown-code-border-default));
+		background: var(--markdown-code-header-bg, var(--markdown-code-header-bg-default));
 		font-size: 0.7rem;
 		letter-spacing: 0.01em;
 		text-transform: lowercase;
@@ -257,7 +285,7 @@
 
 	:global(.markdown-content .code-block__lang) {
 		font-weight: 600;
-		color: var(--markdown-code-muted, #94a3b8);
+		color: var(--markdown-code-muted, var(--markdown-code-muted-default));
 	}
 
 	:global(.markdown-content .code-block__copy) {
@@ -269,7 +297,7 @@
 		border: 1px solid transparent;
 		border-radius: 0.5rem;
 		background: transparent;
-		color: var(--markdown-code-muted, #94a3b8);
+		color: var(--markdown-code-muted, var(--markdown-code-muted-default));
 		cursor: pointer;
 		transition:
 			color 0.15s ease,
@@ -278,9 +306,13 @@
 	}
 
 	:global(.markdown-content .code-block__copy:hover) {
-		color: var(--markdown-code-text, #e2e8f0);
-		border-color: var(--markdown-code-border, #273449);
-		background: color-mix(in srgb, var(--markdown-code-border, #273449) 55%, transparent);
+		color: var(--markdown-code-text, var(--markdown-code-text-default));
+		border-color: var(--markdown-code-border, var(--markdown-code-border-default));
+		background: color-mix(
+			in srgb,
+			var(--markdown-code-border, var(--markdown-code-border-default)) 55%,
+			transparent
+		);
 	}
 
 	:global(.markdown-content .code-block__copy-icon) {
@@ -294,7 +326,7 @@
 	}
 
 	:global(.markdown-content .code-block__copy[data-copy-state='copied']) {
-		color: var(--markdown-code-string, #34d399);
+		color: var(--markdown-code-string, var(--markdown-code-string-default));
 	}
 
 	:global(.markdown-content .code-block__copy[data-copy-state='error']) {
@@ -311,44 +343,44 @@
 	:global(.markdown-content .code-block pre code) {
 		display: block;
 		padding: 0;
-		color: var(--markdown-code-text, #e2e8f0);
+		color: var(--markdown-code-text, var(--markdown-code-text-default));
 		font-family: 'JetBrains Mono', 'Fira Code', Consolas, 'Liberation Mono', Menlo, monospace;
 		font-size: 0.85rem;
 	}
 
 	:global(.markdown-content .hljs-comment),
 	:global(.markdown-content .hljs-quote) {
-		color: var(--markdown-code-muted, #94a3b8);
+		color: var(--markdown-code-muted, var(--markdown-code-muted-default));
 		font-style: italic;
 	}
 
 	:global(.markdown-content .hljs-keyword),
 	:global(.markdown-content .hljs-selector-tag),
 	:global(.markdown-content .hljs-literal) {
-		color: var(--markdown-code-keyword, #c084fc);
+		color: var(--markdown-code-keyword, var(--markdown-code-keyword-default));
 		font-weight: 600;
 	}
 
 	:global(.markdown-content .hljs-string),
 	:global(.markdown-content .hljs-symbol),
 	:global(.markdown-content .hljs-template-tag) {
-		color: var(--markdown-code-string, #34d399);
+		color: var(--markdown-code-string, var(--markdown-code-string-default));
 	}
 
 	:global(.markdown-content .hljs-number),
 	:global(.markdown-content .hljs-regexp),
 	:global(.markdown-content .hljs-attr) {
-		color: var(--markdown-code-number, #fbbf24);
+		color: var(--markdown-code-number, var(--markdown-code-number-default));
 	}
 
 	:global(.markdown-content .hljs-title),
 	:global(.markdown-content .hljs-function) {
-		color: var(--markdown-code-function, #60a5fa);
+		color: var(--markdown-code-function, var(--markdown-code-function-default));
 	}
 
 	:global(.markdown-content .hljs-type),
 	:global(.markdown-content .hljs-built_in),
 	:global(.markdown-content .hljs-class) {
-		color: var(--markdown-code-type, #f472b6);
+		color: var(--markdown-code-type, var(--markdown-code-type-default));
 	}
 </style>

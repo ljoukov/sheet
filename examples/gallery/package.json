@@ -4,7 +4,7 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev --host 127.0.0.1 --port 4173",
+		"dev": "vite dev",
 		"build": "vite build",
 		"build:cloudflare": "CF_PAGES=dummy npm run build && node ./scripts/write-cloudflare-assetsignore.mjs",
 		"build:vercel": "VERCEL=dummy npm run build",

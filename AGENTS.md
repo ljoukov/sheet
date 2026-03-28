@@ -16,6 +16,7 @@
 ## Screenshot Workflow
 
 - README screenshots must come from the isolated gallery render routes under `/render/*`, not from gallery shell pages with sidebar or header chrome.
+- If a surface is documented with a screenshot in `README.md`, keep a matching isolated render route or stable screenshot selector for that exact surface so the image can be regenerated without improvising the crop.
 - Each screenshot route should render exactly one capture surface and expose a stable `[data-screenshot-target="..."]` selector. If a README example is hard to crop cleanly, add or adjust a dedicated render route instead of taking a page screenshot.
 - Use selector screenshots against the screenshot target, not full-page screenshots. Capture the whole component, avoid extra empty margins, and make sure dark screenshots do not show light-theme strips or mismatched surfaces.
 - Capture both light and dark variants for every example referenced in `README.md`. Question examples use `/render/question/<kind>?theme=...`; other components use `/render/<component>?theme=...&state=...` where applicable.
@@ -35,6 +36,7 @@
 
 - Use `npm run check`, `npm test`, and `npm run build` for library validation.
 - Use `npm run gallery:dev` to run the gallery app locally, `npm run gallery:check` for gallery type checks, and `npm run gallery:build` for a production gallery build.
+- When you need a specific gallery port, run `npm run gallery:dev -- --port <port>`. The repo wrapper injects the default host and port only when they were not provided, so forwarded flags should not duplicate or fight the defaults.
 - `npm run verify` is the full validation pass used by CI: lint, check, test, library build/package, gallery check, and gallery build.
 - Do not leave a running gallery dev server around when validating `npm run verify` or `npm run gallery:build`; it can interfere with `.svelte-kit` build output in `examples/gallery`.
 - The gallery exists for local component review and screenshot capture. Keep usage-oriented showcase content in `README.md`, and keep route lists, contributor workflows, and capture procedures here.

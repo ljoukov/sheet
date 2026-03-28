@@ -222,6 +222,10 @@
 	width: min(100%, 104rem);
 }
 
+.gallery-render__panel--summary {
+	width: min(100%, 72rem);
+}
+
 .gallery-render__panel--question {
 	width: min(100%, 88rem);
 }
@@ -232,6 +236,7 @@
 }
 
 .gallery-render__panel--sheet > :global(*),
+.gallery-render__panel--summary > :global(*),
 .gallery-render__panel--question > :global(*) {
 	min-width: 980px;
 }
