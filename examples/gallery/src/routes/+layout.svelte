@@ -37,12 +37,11 @@
 
 	type Crumb = {
 		label: string;
-		href: string | null;
 	};
 
 	const breadcrumbs = $derived.by((): Crumb[] => {
 		const pathname = page.url.pathname;
-		const items: Crumb[] = [{ label: 'Gallery', href: resolve('/') }];
+		const items: Crumb[] = [{ label: 'Gallery' }];
 
 		if (pathname === '/') {
 			return items;
@@ -51,7 +50,7 @@
 		const matchedNav = [...galleryNavigation]
 			.map((item) => ({
 				label: item.label,
-				href: resolve(item.href)
+				href: item.href
 			}))
 			.filter((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))
 			.sort((a, b) => b.href.length - a.href.length)[0];
@@ -60,22 +59,13 @@
 		const pathParts = pathname.split('/').filter(Boolean);
 
 		if (matchedNav && matchedNav.href !== resolve('/')) {
-			items.push({ label: matchedNav.label, href: matchedNav.href });
+			items.push({ label: matchedNav.label });
 		}
 
 		for (let index = consumedParts.length; index < pathParts.length; index += 1) {
-			const href = `/${pathParts.slice(0, index + 1).join('/')}`;
 			items.push({
-				label: toTitle(pathParts[index] ?? ''),
-				href: index === pathParts.length - 1 ? null : href
+				label: toTitle(pathParts[index] ?? '')
 			});
-		}
-
-		if (items.length > 0) {
-			items[items.length - 1] = {
-				...items[items.length - 1],
-				href: null
-			};
 		}
 
 		return items;
@@ -162,11 +152,11 @@
 					<ol class="gallery-breadcrumb__list">
 						{#each breadcrumbs as crumb, index (crumb.label + ':' + index)}
 							<li class={`gallery-breadcrumb__item ${index === 0 ? 'is-root' : ''}`}>
-								{#if crumb.href}
-									<a class="gallery-breadcrumb__link" href={crumb.href}>{crumb.label}</a>
-								{:else}
-									<span class="gallery-breadcrumb__page">{crumb.label}</span>
-								{/if}
+								<span
+									class={index === breadcrumbs.length - 1
+										? 'gallery-breadcrumb__page'
+										: 'gallery-breadcrumb__segment'}>{crumb.label}</span
+								>
 							</li>
 							{#if index < breadcrumbs.length - 1}
 								<li

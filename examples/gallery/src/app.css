@@ -107,8 +107,8 @@
 	@apply hidden md:block;
 }
 
-.gallery-breadcrumb__link {
-	@apply transition-colors hover:text-foreground;
+.gallery-breadcrumb__segment {
+	@apply text-muted-foreground;
 }
 
 .gallery-breadcrumb__page {
