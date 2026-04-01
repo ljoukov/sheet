@@ -218,6 +218,78 @@
 	@apply inline-flex items-center rounded-md border bg-secondary px-2.5 py-1 text-xs font-medium text-secondary-foreground;
 }
 
+.gallery-stat {
+	@apply rounded-lg border bg-background px-4 py-4;
+}
+
+.gallery-stat__value {
+	@apply text-2xl font-semibold tracking-tight text-foreground;
+}
+
+.gallery-stat__label {
+	@apply mt-1 text-xs text-muted-foreground;
+}
+
+.gallery-source-list {
+	@apply mt-5 flex flex-wrap gap-2;
+}
+
+.gallery-source-chip {
+	@apply inline-flex items-center rounded-md border bg-muted/40 px-2 py-1 font-mono text-xs text-muted-foreground;
+}
+
+.gallery-catalog {
+	@apply grid gap-4;
+}
+
+.gallery-catalog__item {
+	@apply grid gap-4 rounded-xl border bg-background p-4;
+}
+
+.gallery-catalog__copy {
+	@apply grid gap-4;
+}
+
+.gallery-catalog__preview {
+	@apply min-w-0;
+}
+
+.gallery-catalog__heading {
+	@apply flex flex-wrap items-start justify-between gap-2;
+}
+
+.gallery-catalog__title {
+	@apply text-base font-semibold tracking-tight text-foreground;
+}
+
+.gallery-catalog__description {
+	@apply text-sm leading-6 text-muted-foreground;
+}
+
+.gallery-token-group {
+	@apply grid gap-2;
+}
+
+.gallery-token-group__label {
+	@apply text-sm font-medium text-foreground;
+}
+
+.gallery-token-row {
+	@apply flex flex-wrap gap-2;
+}
+
+.gallery-token {
+	@apply inline-flex items-center rounded-md border bg-muted/20 px-2 py-1 font-mono text-xs text-muted-foreground;
+}
+
+.gallery-token--required {
+	@apply bg-muted/40;
+}
+
+.gallery-code-block {
+	@apply block rounded-md border bg-muted/40 px-3 py-2 text-xs text-muted-foreground;
+}
+
 .gallery-canvas {
 	@apply rounded-lg border bg-muted/40 p-3;
 }
@@ -389,5 +461,9 @@
 
 	.gallery-grid--three {
 		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.gallery-catalog__item {
+		grid-template-columns: minmax(0, 24rem) minmax(0, 1fr);
 	}
 }

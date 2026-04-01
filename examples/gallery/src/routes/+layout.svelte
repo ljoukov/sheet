@@ -1,4 +1,5 @@
 <script lang="ts">
+	/* eslint-disable svelte/no-navigation-without-resolve */
 	import { BROWSER } from 'esm-env';
 	import PanelLeftIcon from '@lucide/svelte/icons/panel-left';
 	import './layout.css';
@@ -154,15 +155,16 @@
 					<ol class="gallery-breadcrumb__list">
 						{#each breadcrumbs as crumb, index (crumb.label + ':' + index)}
 							<li class={`gallery-breadcrumb__item ${index === 0 ? 'is-root' : ''}`}>
+								<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 								<a
 									href={crumb.href}
 									aria-current={index === breadcrumbs.length - 1 ? 'page' : undefined}
 									class={`gallery-breadcrumb__link ${index === breadcrumbs.length - 1 ? 'is-current' : ''}`}
 								>
 									<span
-									class={index === breadcrumbs.length - 1
-										? 'gallery-breadcrumb__page'
-										: 'gallery-breadcrumb__segment'}>{crumb.label}</span
+										class={index === breadcrumbs.length - 1
+											? 'gallery-breadcrumb__page'
+											: 'gallery-breadcrumb__segment'}>{crumb.label}</span
 									>
 								</a>
 							</li>

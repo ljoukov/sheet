@@ -6,10 +6,13 @@
 <div class="gallery-page">
 	<header class="gallery-page__intro">
 		<div class="gallery-page__eyebrow">Overview</div>
-		<h1 class="gallery-page__title">Library routes for sheets, feedback, and markdown.</h1>
+		<h1 class="gallery-page__title">
+			Library routes for sheets, feedback, markdown, and surface cataloging.
+		</h1>
 		<p class="gallery-page__description">
-			Use this app to inspect the exported package surfaces. Whole-sheet routes stay separate from
-			component routes so screenshots and regression checks remain repeatable.
+			Use this app to inspect the exported package surfaces. The catalog route inventories the
+			supported inputs and outputs, while the focused routes keep screenshots and regression checks
+			repeatable.
 		</p>
 	</header>
 

@@ -71,6 +71,25 @@ export const feedbackCardStates: Record<FeedbackCardState, FeedbackCardDemo> = {
 		thinkingText:
 			'I can keep the divisor idea and fix the count. The condition is `n > 43`, so 44 is allowed.'
 	},
+	responding: {
+		id: 'responding',
+		review: reviewNeedsRevision,
+		thread: {
+			status: 'responding',
+			turns: [
+				{
+					id: 'responding-student',
+					speaker: 'student',
+					text: 'Please check the corrected count.'
+				}
+			]
+		},
+		runtimeStatus: 'responding',
+		thinkingText:
+			'I can keep the divisor idea. The count is the part that slipped, so I should recount from 44 upward.',
+		assistantDraftText:
+			'Your setup is right: remainder **43** means `n | 1980` and `n > 43`.\n\nThe missing factors are **44**, **45**, **396**, **660**, and **1980**.\n\nSo there are **19 possible values of n**.'
+	},
 	resolved: {
 		id: 'resolved',
 		review: reviewCorrect,
@@ -93,7 +112,7 @@ export const feedbackCardStates: Record<FeedbackCardState, FeedbackCardDemo> = {
 	}
 };
 
-export type FeedbackCardState = 'pending' | 'open' | 'thinking' | 'resolved';
+export type FeedbackCardState = 'pending' | 'open' | 'thinking' | 'responding' | 'resolved';
 
 export type FeedbackThreadDemo = {
 	thread: SheetFeedbackThreadData;
@@ -102,9 +121,61 @@ export type FeedbackThreadDemo = {
 	assistantDraftText?: string;
 };
 
-export type FeedbackThreadState = 'open' | 'responding';
+export type FeedbackThreadState = 'attachments' | 'open' | 'responding';
+
+const sampleImagePreviewUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
+	`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220">
+		<rect width="320" height="220" fill="#f5eee1"/>
+		<rect x="22" y="22" width="276" height="176" rx="20" fill="#fffdfa" stroke="#cfbfa5" stroke-width="4"/>
+		<rect x="54" y="48" width="212" height="104" rx="12" fill="#e7f0ea"/>
+		<circle cx="94" cy="84" r="18" fill="#f3b35a"/>
+		<path d="M72 152l40-34 34 22 38-42 50 54H72z" fill="#4d8d70"/>
+		<text x="160" y="182" text-anchor="middle" font-family="Georgia, serif" font-size="20" fill="#6a5646">working photo</text>
+	</svg>`
+)}`;
+
+const sampleTextFileUrl = `data:text/plain;charset=utf-8,${encodeURIComponent(
+	[
+		'Divisor recount',
+		'44, 45, 55, 60, 66, 90, 99, 110, 132, 165, 180, 198, 220, 330, 396, 495, 660, 990, 1980'
+	].join('\n')
+)}`;
 
 export const feedbackThreadStates: Record<FeedbackThreadState, FeedbackThreadDemo> = {
+	attachments: {
+		thread: {
+			status: 'open',
+			turns: [
+				{
+					id: 'student-attachments',
+					speaker: 'student',
+					text: 'Here is the part of my working where I recounted the factors.',
+					attachments: [
+						{
+							id: 'attachment-image',
+							filename: 'divisor-working.png',
+							contentType: 'image/png',
+							sizeBytes: 248_000,
+							url: sampleImagePreviewUrl
+						},
+						{
+							id: 'attachment-text',
+							filename: 'divisor-list.txt',
+							contentType: 'text/plain',
+							sizeBytes: 1_280,
+							url: sampleTextFileUrl
+						}
+					]
+				},
+				{
+					id: 'tutor-attachments',
+					speaker: 'tutor',
+					text: 'Good. The image makes the missing values easier to see. Compare the written list against the factors above 43.'
+				}
+			]
+		},
+		draft: ''
+	},
 	open: {
 		thread: {
 			status: 'open',

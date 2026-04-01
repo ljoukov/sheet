@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { ChatComposer } from '../chat/index.js';
 	import { MarkdownContent } from '../markdown/index.js';
 	import {
 		SPARK_ATTACHMENT_FILE_INPUT_ACCEPT,
@@ -7,6 +6,7 @@
 		resolveSparkAttachmentBadge
 	} from '../../spark/attachments.js';
 	import { normalizeTutorMarkdown } from '../../internal/normalize-feedback-markdown.js';
+	import ReplyComposer from './reply-composer.svelte';
 	import type { PaperSheetComposerAttachmentDraft, PaperSheetFeedbackTurn } from './types.js';
 
 	function openPicker(input: HTMLInputElement | null): void {
@@ -268,7 +268,7 @@
 		{#if draftAttachmentError}
 			<p class="paper-sheet-note__attachment-error" role="alert">{draftAttachmentError}</p>
 		{/if}
-		<ChatComposer
+		<ReplyComposer
 			value={visibleDraft}
 			placeholder={visiblePlaceholder}
 			ariaLabel={`Reply for ${questionLabel}`}

@@ -19,13 +19,13 @@
 			component: 'feedback-card',
 			path: '/render/feedback-card',
 			query: 'theme=light&state=open',
-			states: ['pending', 'open', 'thinking', 'resolved']
+			states: ['pending', 'open', 'thinking', 'responding', 'resolved']
 		},
 		{
 			component: 'feedback-thread',
 			path: '/render/feedback-thread',
 			query: 'theme=light&state=open',
-			states: ['open', 'responding']
+			states: ['open', 'attachments', 'responding']
 		},
 		{
 			component: 'markdown',

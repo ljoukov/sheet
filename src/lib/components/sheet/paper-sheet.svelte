@@ -1663,7 +1663,8 @@
 	}
 
 	:global([data-theme='dark'] .paper-sheet),
-	:global(.dark .paper-sheet) {
+	:global(.dark .paper-sheet),
+	:global(:root:not([data-theme='light']) .paper-sheet) {
 		--paper-accent-text: color-mix(in srgb, var(--sheet-color) 70%, #f8fafc);
 		--paper-surface: #17142a;
 		--paper-surface-elevated: #201c39;
@@ -2084,6 +2085,10 @@
 	.paper-sheet__mcq-option {
 		cursor: pointer;
 		transition: all 0.15s;
+	}
+
+	.paper-sheet__mcq-option.is-selected {
+		font-weight: 600;
 	}
 
 	.paper-sheet__mcq-option:disabled,

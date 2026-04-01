@@ -19,6 +19,11 @@
 			description: 'Runtime state while the tutor is reasoning.'
 		},
 		{
+			id: 'responding',
+			title: 'Responding',
+			description: 'Streaming tutor reply while the note is still open.'
+		},
+		{
 			id: 'resolved',
 			title: 'Resolved',
 			description: 'Closed thread with follow-up affordance.'

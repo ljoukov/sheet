@@ -9,6 +9,7 @@ import {
 
 export const galleryNavigation = [
 	{ href: '/', label: 'Overview', caption: 'Poster, routes, and visual context' },
+	{ href: '/catalog', label: 'Catalog', caption: 'Supported surfaces, inputs, and live previews' },
 	{ href: '/worksheet', label: 'Worksheets', caption: 'Whole sheet demos with seeded content' },
 	{ href: '/feedback', label: 'Feedback cards', caption: 'Question-level tutor note states' },
 	{ href: '/thread', label: 'Feedback thread', caption: 'Conversation bubbles and reply composer' },
