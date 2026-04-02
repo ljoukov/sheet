@@ -1,18 +1,25 @@
 import type {
 	PaperSheetAnswers as SchemaPaperSheetAnswers,
+	PaperSheetAnswerBankOption,
+	PaperSheetAnswerBankQuestion,
 	PaperSheetBlank,
 	PaperSheetCalcQuestion,
+	PaperSheetClozeQuestion,
 	PaperSheetContentSection as SchemaPaperSheetContentSection,
 	PaperSheetData as SchemaPaperSheetData,
 	PaperSheetFeedbackAttachment,
 	PaperSheetFeedbackThread,
 	PaperSheetFeedbackTurn,
 	PaperSheetFillQuestion,
+	PaperSheetFlowQuestion,
 	PaperSheetHookSection,
 	PaperSheetInfoBox,
 	PaperSheetLinesQuestion,
 	PaperSheetMatchQuestion,
+	PaperSheetMcqOption,
 	PaperSheetMcqQuestion,
+	PaperSheetQuestionEntry as SchemaPaperSheetQuestionEntry,
+	PaperSheetQuestionGroup,
 	PaperSheetQuestionReview,
 	PaperSheetQuestionReviewStatus,
 	PaperSheetReview,
@@ -23,17 +30,23 @@ import type {
 } from './schema.js';
 
 export type {
+	PaperSheetAnswerBankOption,
+	PaperSheetAnswerBankQuestion,
 	PaperSheetBlank,
 	PaperSheetCalcQuestion,
+	PaperSheetClozeQuestion,
 	PaperSheetFeedbackAttachment,
 	PaperSheetFeedbackThread,
 	PaperSheetFeedbackTurn,
 	PaperSheetFillQuestion,
+	PaperSheetFlowQuestion,
 	PaperSheetHookSection,
 	PaperSheetInfoBox,
 	PaperSheetLinesQuestion,
 	PaperSheetMatchQuestion,
+	PaperSheetMcqOption,
 	PaperSheetMcqQuestion,
+	PaperSheetQuestionGroup,
 	PaperSheetQuestionReview,
 	PaperSheetQuestionReviewStatus,
 	PaperSheetReview,
@@ -56,15 +69,20 @@ export type PaperSheetComposerAttachmentDraft = {
 };
 
 export type PaperSheetQuestion =
+	| PaperSheetAnswerBankQuestion
 	| PaperSheetFillQuestion
 	| PaperSheetMcqQuestion
 	| PaperSheetLinesQuestion
 	| PaperSheetCalcQuestion
 	| PaperSheetMatchQuestion
-	| PaperSheetSpellingQuestion;
+	| PaperSheetSpellingQuestion
+	| PaperSheetClozeQuestion
+	| PaperSheetFlowQuestion;
+
+export type PaperSheetQuestionEntry = SchemaPaperSheetQuestionEntry;
 
 export type PaperSheetContentSection = Omit<SchemaPaperSheetContentSection, 'questions'> & {
-	questions?: PaperSheetQuestion[];
+	questions?: PaperSheetQuestionEntry[];
 };
 
 export type PaperSheetSection = PaperSheetHookSection | PaperSheetContentSection;
@@ -114,20 +132,27 @@ export type SheetSample = {
 };
 
 export type SheetAnswers = PaperSheetAnswers;
+export type SheetAnswerBankOption = PaperSheetAnswerBankOption;
+export type SheetAnswerBankQuestion = PaperSheetAnswerBankQuestion;
 export type SheetBlank = PaperSheetBlank;
 export type SheetCalculationQuestion = PaperSheetCalcQuestion;
+export type SheetClozeQuestion = PaperSheetClozeQuestion;
 export type SheetComposerAttachmentDraft = PaperSheetComposerAttachmentDraft;
 export type SheetContentSection = PaperSheetContentSection;
 export type SheetFeedbackAttachment = PaperSheetFeedbackAttachment;
 export type SheetFeedbackThreadData = PaperSheetFeedbackThread;
 export type SheetFeedbackTurn = PaperSheetFeedbackTurn;
 export type SheetFillQuestion = PaperSheetFillQuestion;
+export type SheetFlowQuestion = PaperSheetFlowQuestion;
 export type SheetHookSection = PaperSheetHookSection;
 export type SheetInfoBox = PaperSheetInfoBox;
 export type SheetLinesQuestion = PaperSheetLinesQuestion;
 export type SheetMatchQuestion = PaperSheetMatchQuestion;
+export type SheetMultipleChoiceOption = PaperSheetMcqOption;
 export type SheetMultipleChoiceQuestion = PaperSheetMcqQuestion;
 export type SheetQuestion = PaperSheetQuestion;
+export type SheetQuestionEntry = PaperSheetQuestionEntry;
+export type SheetQuestionGroup = PaperSheetQuestionGroup;
 export type SheetQuestionReview = PaperSheetQuestionReview;
 export type SheetQuestionReviewStatus = PaperSheetQuestionReviewStatus;
 export type SheetReferences = SparkGraderWorksheetReferences;

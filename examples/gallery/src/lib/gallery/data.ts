@@ -3,7 +3,7 @@ import {
 	type SheetAnswers,
 	type SheetContentSection,
 	type SheetDocument,
-	type SheetQuestion,
+	type SheetQuestionEntry,
 	type SheetSample
 } from '@ljoukov/sheet';
 
@@ -106,7 +106,7 @@ export function getWorksheetById(id: string): SheetSample | null {
 function findQuestionSelection(selection: QuestionDemoSelection): {
 	sample: SheetSample;
 	section: SheetContentSection;
-	question: SheetQuestion;
+	question: SheetQuestionEntry;
 	seedAnswers?: SheetAnswers;
 } | null {
 	for (const sample of sampleSheets) {

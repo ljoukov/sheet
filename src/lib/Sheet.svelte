@@ -23,7 +23,10 @@
 		allowReplies?: boolean;
 		showFooter?: boolean;
 		footerLabel?: string | null;
+		gradeLabel?: string;
+		grading?: boolean;
 		onAnswersChange?: (answers: PaperSheetAnswers) => void;
+		onGrade?: (answers: PaperSheetAnswers) => boolean | Promise<boolean> | void | Promise<void>;
 		onReply?: (
 			questionId: string,
 			payload: SheetReplyPayload
@@ -42,7 +45,10 @@
 		allowReplies = false,
 		showFooter = true,
 		footerLabel = null,
+		gradeLabel = 'Grade',
+		grading = false,
 		onAnswersChange = undefined,
+		onGrade = undefined,
 		onReply = undefined
 	}: Props = $props();
 
@@ -125,7 +131,7 @@
 		questionId: string,
 		draft: string,
 		attachments: File[]
-	): Promise<boolean | void> | boolean | void {
+	): boolean | void | Promise<boolean> | Promise<void> {
 		const result = onReply?.(questionId, {
 			text: draft,
 			attachments,
@@ -137,12 +143,12 @@
 			return result;
 		}
 
-		return result.then((value): boolean | void => {
+		return Promise.resolve(result).then((value) => {
 			if (value === false) {
-				return false;
+				return false as boolean;
 			}
-			return;
-		});
+			return undefined;
+		}) as Promise<boolean> | Promise<void>;
 	}
 </script>
 
@@ -160,6 +166,9 @@
 	allowFeedbackReplies={allowReplies}
 	{showFooter}
 	{footerLabel}
+	{gradeLabel}
+	{grading}
 	onAnswersChange={handleAnswersChange}
+	{onGrade}
 	onReplyToTutor={handleReply}
 />
