@@ -77,6 +77,7 @@ Optional inputs
 - `feedbackState`
 - `mode`
 - `allowReplies`
+- `showCompletedFeedbackCards`
 - `showFooter`
 - `footerLabel`
 - `onAnswersChange`
@@ -107,6 +108,8 @@ Optional inputs
 - `review.objectiveQuestionCount`
 - `review.teacherReviewMarks`
 - `review.teacherReviewQuestionCount`
+- `review.questions[questionId].score.got`
+- `review.questions[questionId].score.total`
 
 Shown near the top of `Sheet` when `review` or `mockReview` is provided.
 
@@ -202,7 +205,7 @@ Optional inputs
 
 Implements: [`Markdown`](src/lib/components/markdown/markdown-content.svelte)
 
-Description: Shared Markdown renderer with KaTeX maths, syntax-highlighted code blocks, inline rendering, and copy buttons for fenced code.
+Description: Shared Markdown renderer with KaTeX maths, syntax-highlighted code blocks, responsive figure-style images, safe new-tab links, and copy buttons for fenced code.
 
 Required inputs
 

@@ -553,6 +553,7 @@ export const PaperSheetQuestionReviewSchema = z.object({
 	label: trimmedString.optional(),
 	statusLabel: trimmedString.optional(),
 	note: trimmedString,
+	score: PaperSheetScoreSchema.optional(),
 	replyPlaceholder: trimmedString.optional(),
 	followUp: trimmedString.optional()
 });

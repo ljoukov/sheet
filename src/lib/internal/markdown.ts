@@ -1,4 +1,5 @@
 import { marked, type TokenizerAndRendererExtension } from 'marked';
+import type { Tokens } from 'marked';
 import markedKatex from 'marked-katex-extension';
 import hljs from 'highlight.js/lib/core';
 import javascript from 'highlight.js/lib/languages/javascript';
@@ -66,6 +67,54 @@ function resolveLanguageLabel(raw: string, normalized: string): string {
 		return LANGUAGE_LABELS.get(normalized) ?? raw;
 	}
 	return raw || normalized || 'text';
+}
+
+function sanitizeUrl(value: string, kind: 'link' | 'image'): string | null {
+	const trimmed = value.trim();
+	if (trimmed.length === 0) {
+		return null;
+	}
+
+	if (
+		trimmed.startsWith('#') ||
+		trimmed.startsWith('/') ||
+		trimmed.startsWith('./') ||
+		trimmed.startsWith('../') ||
+		trimmed.startsWith('?')
+	) {
+		return trimmed;
+	}
+
+	const schemeMatch = trimmed.match(/^([a-z][a-z0-9+.-]*):/iu);
+	if (!schemeMatch) {
+		return trimmed;
+	}
+
+	const scheme = schemeMatch[1]?.toLowerCase();
+	if (!scheme) {
+		return null;
+	}
+
+	if (kind === 'link') {
+		if (scheme === 'http' || scheme === 'https' || scheme === 'mailto' || scheme === 'tel') {
+			return trimmed;
+		}
+		return null;
+	}
+
+	if (scheme === 'http' || scheme === 'https' || scheme === 'data' || scheme === 'blob') {
+		return trimmed;
+	}
+
+	return null;
+}
+
+function renderTitleAttribute(title: string | null | undefined): string {
+	return title ? ` title="${escapeHtml(title)}"` : '';
+}
+
+function isImageOnlyLink(tokens: Tokens.Link['tokens']): boolean {
+	return tokens.length === 1 && tokens[0]?.type === 'image';
 }
 
 type CodeSpanMath = { expr: string; displayMode: boolean };
@@ -245,6 +294,40 @@ renderer.code = (token) => {
 		'</div>',
 		`<pre><code class="${languageClass}">${highlighted}</code></pre>`,
 		'</div>'
+	].join('');
+};
+renderer.link = ({ href, title, tokens }) => {
+	const safeHref = sanitizeUrl(href, 'link');
+	const content = renderer.parser.parseInline(tokens);
+	if (!safeHref) {
+		return content;
+	}
+
+	const titleAttr = renderTitleAttribute(title);
+	const opensInNewTab = !safeHref.startsWith('#');
+	const className = isImageOnlyLink(tokens) ? 'markdown-figure-link' : 'markdown-link';
+
+	return [
+		`<a class="${className}" href="${escapeHtml(safeHref)}"${titleAttr}`,
+		opensInNewTab ? ' target="_blank" rel="noopener noreferrer">' : '>',
+		content,
+		'</a>'
+	].join('');
+};
+renderer.image = ({ href, title, text }) => {
+	const safeHref = sanitizeUrl(href, 'image');
+	if (!safeHref) {
+		return escapeHtml(text);
+	}
+
+	const titleAttr = renderTitleAttribute(title);
+	const caption = title ? `<span class="markdown-figure__caption">${escapeHtml(title)}</span>` : '';
+
+	return [
+		'<span class="markdown-figure" role="figure">',
+		`<img class="markdown-figure__image" src="${escapeHtml(safeHref)}" alt="${escapeHtml(text)}" loading="lazy" decoding="async"${titleAttr} />`,
+		caption,
+		'</span>'
 	].join('');
 };
 

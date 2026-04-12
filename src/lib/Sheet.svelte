@@ -21,6 +21,7 @@
 		feedbackState?: SheetFeedbackStateMap;
 		mode?: SheetMode;
 		allowReplies?: boolean;
+		showCompletedFeedbackCards?: boolean;
 		showFooter?: boolean;
 		footerLabel?: string | null;
 		gradeLabel?: string;
@@ -43,6 +44,7 @@
 		feedbackState = {},
 		mode = 'interactive',
 		allowReplies = false,
+		showCompletedFeedbackCards = true,
 		showFooter = true,
 		footerLabel = null,
 		gradeLabel = 'Grade',
@@ -164,6 +166,7 @@
 	{feedbackAssistantDrafts}
 	{editable}
 	allowFeedbackReplies={allowReplies}
+	{showCompletedFeedbackCards}
 	{showFooter}
 	{footerLabel}
 	{gradeLabel}

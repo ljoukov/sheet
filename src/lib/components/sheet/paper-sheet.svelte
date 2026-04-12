@@ -19,6 +19,7 @@
 		isSparkSupportedClientFile
 	} from '../../spark/attachments.js';
 	import PaperSheetQuestionFeedback from './paper-sheet-question-feedback.svelte';
+	import { formatQuestionMarksLabel, shouldShowQuestionFeedback } from './question-review.js';
 	import type {
 		PaperSheetAnswerBankQuestion,
 		PaperSheetAnswers,
@@ -240,10 +241,17 @@
 
 	function createQuestionReview(
 		question: PaperSheetQuestion,
-		status: PaperSheetQuestionReviewStatus
+		status: PaperSheetQuestionReviewStatus,
+		score?: PaperSheetScore
 	): PaperSheetQuestionReview {
+		function withQuestionScore(
+			review: Omit<PaperSheetQuestionReview, 'score'>
+		): PaperSheetQuestionReview {
+			return score ? { ...review, score } : review;
+		}
+
 		if (status === 'teacher-review') {
-			return {
+			return withQuestionScore({
 				status,
 				label: 'Response space',
 				statusLabel: 'reflection prompt',
@@ -251,7 +259,7 @@
 				replyPlaceholder: 'Write your reply here...',
 				followUp:
 					'Good. When you redraft, keep one clear point per sentence and pull in one exact detail from the theory box so the explanation feels anchored.'
-			};
+			});
 		}
 
 		if (status === 'correct') {
@@ -259,7 +267,7 @@
 				case 'answer_bank':
 				case 'fill':
 				case 'cloze':
-					return {
+					return withQuestionScore({
 						status,
 						label: 'Strong move',
 						statusLabel: 'optional reply',
@@ -267,9 +275,9 @@
 						replyPlaceholder: 'Optional reply...',
 						followUp:
 							'That method works. On similar retrieval questions, scan for the bold detail in the theory box first, then copy it exactly.'
-					};
+					});
 				case 'mcq':
-					return {
+					return withQuestionScore({
 						status,
 						label: 'Strong move',
 						statusLabel: 'optional reply',
@@ -277,9 +285,9 @@
 						replyPlaceholder: 'Optional reply...',
 						followUp:
 							'Good instinct. The next step is saying **why** that answer fits, not just spotting it in the list.'
-					};
+					});
 				case 'calc':
-					return {
+					return withQuestionScore({
 						status,
 						label: 'Strong move',
 						statusLabel: 'optional reply',
@@ -287,9 +295,9 @@
 						replyPlaceholder: 'Optional reply...',
 						followUp:
 							'To make it even stronger, write the formula first, then substitute the values, then finish with the unit.'
-					};
+					});
 				case 'match':
-					return {
+					return withQuestionScore({
 						status,
 						label: 'Strong move',
 						statusLabel: 'optional reply',
@@ -297,9 +305,9 @@
 						replyPlaceholder: 'Optional reply...',
 						followUp:
 							'A good revision trick is to say each term and meaning out loud as one phrase, so the pair sticks together.'
-					};
+					});
 				case 'spelling':
-					return {
+					return withQuestionScore({
 						status,
 						label: 'Strong move',
 						statusLabel: 'optional reply',
@@ -307,9 +315,9 @@
 						replyPlaceholder: 'Optional reply...',
 						followUp:
 							'Keep noticing the sound pattern in the middle of the word. That is often what prevents the slip on a second attempt.'
-					};
+					});
 				case 'lines':
-					return {
+					return withQuestionScore({
 						status,
 						label: 'Response space',
 						statusLabel: 'reflection prompt',
@@ -317,9 +325,9 @@
 						replyPlaceholder: 'Write your reply here...',
 						followUp:
 							'When you refine it, keep your explanation tight and include one concrete piece of evidence from the sheet.'
-					};
+					});
 				case 'flow':
-					return {
+					return withQuestionScore({
 						status,
 						label: 'Strong move',
 						statusLabel: 'optional reply',
@@ -327,7 +335,7 @@
 						replyPlaceholder: 'Optional reply...',
 						followUp:
 							'Good approach. On flow questions, checking one step at a time is usually faster than working back from the end.'
-					};
+					});
 			}
 		}
 
@@ -335,7 +343,7 @@
 			case 'answer_bank':
 			case 'fill':
 			case 'cloze':
-				return {
+				return withQuestionScore({
 					status,
 					label: 'Quick note',
 					statusLabel: 'response needed',
@@ -343,9 +351,9 @@
 					replyPlaceholder: 'Write your reply here...',
 					followUp:
 						'That is a better direction. Before you move on, rewrite the full sentence in your head so the blank fits the question smoothly.'
-				};
+				});
 			case 'mcq':
-				return {
+				return withQuestionScore({
 					status,
 					label: 'Quick note',
 					statusLabel: 'response needed',
@@ -353,9 +361,9 @@
 					replyPlaceholder: 'Write your reply here...',
 					followUp:
 						'Good. Now turn that option into a short explanation: “I chose this because...” That makes the knowledge easier to keep.'
-				};
+				});
 			case 'calc':
-				return {
+				return withQuestionScore({
 					status,
 					label: 'Quick note',
 					statusLabel: 'response needed',
@@ -363,9 +371,9 @@
 					replyPlaceholder: 'Write your reply here...',
 					followUp:
 						'That plan is better. On the next attempt, keep each step on its own line so the arithmetic is easier to check.'
-				};
+				});
 			case 'match':
-				return {
+				return withQuestionScore({
 					status,
 					label: 'Quick note',
 					statusLabel: 'response needed',
@@ -373,9 +381,9 @@
 					replyPlaceholder: 'Write your reply here...',
 					followUp:
 						'That makes sense. Try matching the easiest term first, then use process of elimination on the final pair.'
-				};
+				});
 			case 'spelling':
-				return {
+				return withQuestionScore({
 					status,
 					label: 'Quick note',
 					statusLabel: 'response needed',
@@ -383,9 +391,9 @@
 					replyPlaceholder: 'Write your reply here...',
 					followUp:
 						'That is the right habit. After you fix it once, write the corrected spelling again from memory so it sticks.'
-				};
+				});
 			case 'lines':
-				return {
+				return withQuestionScore({
 					status,
 					label: 'Response space',
 					statusLabel: 'reflection prompt',
@@ -393,9 +401,9 @@
 					replyPlaceholder: 'Write your reply here...',
 					followUp:
 						'Useful reflection. On the redraft, keep one clear idea per sentence and tie it back to the theory text.'
-				};
+				});
 			case 'flow':
-				return {
+				return withQuestionScore({
 					status,
 					label: 'Quick note',
 					statusLabel: 'response needed',
@@ -403,8 +411,29 @@
 					replyPlaceholder: 'Write your reply here...',
 					followUp:
 						'That is closer. If you get stuck, compare adjacent boxes only and check whether the operation between them really matches the change.'
-				};
+				});
 		}
+	}
+
+	function buildMockQuestionScore(
+		question: PaperSheetQuestion,
+		status: PaperSheetQuestionReviewStatus
+	): PaperSheetScore | undefined {
+		if (status === 'teacher-review' || question.marks <= 0) {
+			return undefined;
+		}
+
+		if (status === 'correct') {
+			return {
+				got: question.marks,
+				total: question.marks
+			};
+		}
+
+		return {
+			got: Math.max(question.marks - 1, 0),
+			total: question.marks
+		};
 	}
 
 	function buildMockReview(sheet: PaperSheetData): PaperSheetMockReview {
@@ -434,10 +463,11 @@
 			objectiveQuestionCount += 1;
 			const status: PaperSheetQuestionReviewStatus =
 				objectiveIndex % 3 === 1 ? 'incorrect' : 'correct';
-			if (status === 'correct') {
-				got += question.marks;
+			const score = buildMockQuestionScore(question, status);
+			if (score) {
+				got += score.got;
 			}
-			questions[questionKey] = createQuestionReview(question, status);
+			questions[questionKey] = createQuestionReview(question, status, score);
 			objectiveIndex += 1;
 		}
 
@@ -451,10 +481,6 @@
 			note: 'Preview only. This component shows mocked review feedback for UI validation; it is not checking answer keys.',
 			questions
 		};
-	}
-
-	function shouldShowQuestionFeedback(review: PaperSheetQuestionReview | null): boolean {
-		return review !== null;
 	}
 
 	function resolveReviewColors(status: PaperSheetQuestionReviewStatus | null): {
@@ -605,6 +631,7 @@
 		feedbackAssistantDrafts: initialFeedbackAssistantDrafts = {},
 		editable = true,
 		allowFeedbackReplies = false,
+		showCompletedFeedbackCards = true,
 		showFooter = true,
 		footerLabel = null,
 		gradeLabel = 'Grade',
@@ -624,6 +651,7 @@
 		feedbackAssistantDrafts?: Record<string, string>;
 		editable?: boolean;
 		allowFeedbackReplies?: boolean;
+		showCompletedFeedbackCards?: boolean;
 		showFooter?: boolean;
 		footerLabel?: string | null;
 		gradeLabel?: string;
@@ -1403,7 +1431,11 @@
 	{@const questionReview = getQuestionReview(questionKey)}
 	{@const reviewStatus = currentReview ? (questionReview?.status ?? null) : null}
 	{@const feedbackThread = getFeedbackThread(questionKey)}
-	{@const showQuestionFeedback = questionReview && shouldShowQuestionFeedback(questionReview)}
+	{@const showQuestionFeedback = shouldShowQuestionFeedback(
+		questionReview,
+		feedbackThread,
+		showCompletedFeedbackCards
+	)}
 	{@const resolvedFeedback = feedbackThread?.status === 'resolved'}
 	{@const showLinesMarkdown = shouldShowLinesMarkdownRow(question)}
 	{@const questionLabel = getDisplayedQuestionLabel(questionKey, question)}
@@ -1418,7 +1450,7 @@
 			</div>
 
 			<div class={`paper-sheet__question-marks ${resolvedFeedback ? 'is-resolved' : ''}`}>
-				[{question.marks}m]
+				{formatQuestionMarksLabel(question.marks, questionReview)}
 			</div>
 
 			<div class="paper-sheet__question-body">
@@ -1849,7 +1881,7 @@
 			</div>
 		{/if}
 
-		{#if showQuestionFeedback}
+		{#if questionReview && showQuestionFeedback}
 			<div class="paper-sheet__question-feedback">
 				<PaperSheetQuestionFeedback
 					review={questionReview}
