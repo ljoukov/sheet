@@ -2803,7 +2803,6 @@
 
 	.paper-sheet__mcq-grid.is-compact .paper-sheet__mcq-option {
 		grid-template-columns: auto auto;
-		min-height: 72px;
 	}
 
 	.paper-sheet__mcq-option:disabled,
