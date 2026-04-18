@@ -3412,32 +3412,25 @@
 		}
 
 		.paper-sheet__question-main {
-			display: block;
+			grid-template-columns: var(--paper-question-number-column) minmax(0, 1fr);
+			grid-template-areas:
+				'number marks'
+				'body body';
+			row-gap: 8px;
 		}
 
 		.paper-sheet__question-group-main {
 			display: block;
 		}
 
-		.paper-sheet__question-main::after {
-			content: '';
-			display: block;
-			clear: both;
-		}
-
-		.paper-sheet__question-group-main::after {
-			content: '';
-			display: block;
-			clear: both;
-		}
-
 		.paper-sheet__question-number {
-			float: left;
-			margin-right: 12px;
+			grid-area: number;
+			margin-right: 0;
 		}
 
 		.paper-sheet__question-marks {
-			float: right;
+			grid-area: marks;
+			justify-self: end;
 			padding-left: 0;
 			margin-top: 0;
 			margin-left: 12px;
@@ -3449,6 +3442,7 @@
 		}
 
 		.paper-sheet__question-body {
+			grid-area: body;
 			display: block;
 			min-width: 0;
 		}
