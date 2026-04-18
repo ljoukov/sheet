@@ -647,6 +647,7 @@
 		grading = false,
 		onAnswersChange = undefined,
 		onGrade = undefined,
+		onOpenFeedbackResponse = undefined,
 		onReplyToTutor = undefined
 	}: {
 		sheet: PaperSheetData;
@@ -669,6 +670,7 @@
 		onGrade?:
 			| ((answers: PaperSheetAnswers) => boolean | Promise<boolean> | void | Promise<void>)
 			| undefined;
+		onOpenFeedbackResponse?: ((questionId: string) => void) | undefined;
 		onReplyToTutor?:
 			| ((
 					questionId: string,
@@ -1039,6 +1041,10 @@
 			...openFeedbackCards,
 			[context.questionKey]: true
 		};
+		if (onOpenFeedbackResponse) {
+			onOpenFeedbackResponse(context.questionKey);
+			return;
+		}
 		activeFeedbackResponse = context;
 	}
 
@@ -2161,7 +2167,9 @@
 					{#each section.questions ?? [] as entry (`${section.id}-${entry.id}`)}
 						{#if isPaperSheetQuestionGroup(entry)}
 							<div class="paper-sheet__question-group">
-								<div class="paper-sheet__question-group-main">
+								<div
+									class={`paper-sheet__question-group-main ${entry.displayNumber ? 'has-number' : 'is-unnumbered'}`}
+								>
 									{#if entry.displayNumber}
 										<div class="paper-sheet__question-number paper-sheet__question-number--group">
 											{entry.displayNumber}
@@ -2452,6 +2460,12 @@
 		--paper-review-teacher-bg: color-mix(in srgb, #d6a11e 24%, #1d1934);
 		--paper-review-teacher-border: #fbbf24;
 		--paper-review-teacher-text: #fde68a;
+		--markdown-table-border: color-mix(in srgb, var(--paper-accent-text) 28%, #3a3258);
+		--markdown-table-head-bg: color-mix(
+			in srgb,
+			var(--paper-accent-text) 18%,
+			var(--paper-surface-elevated)
+		);
 	}
 
 	.paper-sheet__header {
@@ -2631,6 +2645,10 @@
 		grid-template-columns: var(--paper-question-number-column) minmax(0, 1fr);
 		column-gap: 12px;
 		align-items: start;
+	}
+
+	.paper-sheet__question-group-main.is-unnumbered {
+		display: block;
 	}
 
 	.paper-sheet__question-number--group {

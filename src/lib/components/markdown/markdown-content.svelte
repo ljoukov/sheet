@@ -149,6 +149,7 @@
 	}
 
 	:global([data-theme='dark'] .markdown-content),
+	:global(:root:not([data-theme='light']) .markdown-content),
 	:global(.dark .markdown-content) {
 		--markdown-inline-code-bg-default: color-mix(in srgb, currentColor 12%, transparent);
 		--markdown-inline-code-text-default: currentColor;

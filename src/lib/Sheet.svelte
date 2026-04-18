@@ -28,6 +28,7 @@
 		grading?: boolean;
 		onAnswersChange?: (answers: PaperSheetAnswers) => void;
 		onGrade?: (answers: PaperSheetAnswers) => boolean | Promise<boolean> | void | Promise<void>;
+		onOpenResponse?: (questionId: string) => void;
 		onReply?: (
 			questionId: string,
 			payload: SheetReplyPayload
@@ -51,6 +52,7 @@
 		grading = false,
 		onAnswersChange = undefined,
 		onGrade = undefined,
+		onOpenResponse = undefined,
 		onReply = undefined
 	}: Props = $props();
 
@@ -173,5 +175,6 @@
 	{grading}
 	onAnswersChange={handleAnswersChange}
 	{onGrade}
+	onOpenFeedbackResponse={onOpenResponse}
 	onReplyToTutor={handleReply}
 />

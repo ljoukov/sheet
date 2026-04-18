@@ -127,6 +127,7 @@
 	}
 
 	:global([data-theme='dark'] .sheet-feedback-card-shell),
+	:global(:root:not([data-theme='light']) .sheet-feedback-card-shell),
 	:global(.dark .sheet-feedback-card-shell) {
 		--sheet-color: color-mix(in srgb, #d6a11e 72%, #f8fafc);
 		--paper-surface: #17142a;

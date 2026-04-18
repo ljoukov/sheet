@@ -130,6 +130,7 @@
 	}
 
 	:global([data-theme='dark'] .sheet-feedback-thread-shell),
+	:global(:root:not([data-theme='light']) .sheet-feedback-thread-shell),
 	:global(.dark .sheet-feedback-thread-shell) {
 		--sheet-color: color-mix(in srgb, #d6a11e 72%, #f8fafc);
 		--paper-surface: #17142a;
