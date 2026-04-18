@@ -124,7 +124,7 @@ Shown near the top of `Sheet` when `review` or `mockReview` is provided.
 
 Implements: [`SheetFeedbackCard`](src/lib/SheetFeedbackCard.svelte)
 
-Description: Per-question feedback surface that wraps a review note, optional conversation thread, and reply composer.
+Description: Per-question feedback surface that wraps a review note with either an inline reply flow or a focused response action.
 
 Required inputs
 
@@ -139,6 +139,7 @@ Optional inputs
 - `runtimeStatus`
 - `thinkingText`
 - `assistantDraftText`
+- `responseMode`
 - `showComposer`
 - `showFollowUpButton`
 - `resolvedFollowUpMode`
@@ -148,6 +149,7 @@ Optional inputs
 - `allowTakePhoto`
 - `questionLabel`
 - `onToggle`
+- `onOpenResponse`
 - `onRequestFollowUp`
 - `onAttachFiles`
 - `onRemoveDraftAttachment`

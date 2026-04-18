@@ -231,7 +231,7 @@ export const sheetCatalogItems: SheetCatalogItem[] = [
 		component: 'SheetFeedbackCard',
 		title: 'Question feedback note',
 		description:
-			'Review-note surface that combines a tutor note, optional thread, and inline reply composer.',
+			'Review-note surface that combines a tutor note with either an inline reply flow or focused response action.',
 		requiredInputs: ['review.status', 'review.note', 'questionLabel'],
 		optionalInputs: [
 			'thread',
@@ -240,8 +240,10 @@ export const sheetCatalogItems: SheetCatalogItem[] = [
 			'runtimeStatus',
 			'thinkingText',
 			'assistantDraftText',
+			'responseMode',
 			'showComposer',
 			'showFollowUpButton',
+			'onOpenResponse',
 			'onDraftChange',
 			'onReply'
 		],

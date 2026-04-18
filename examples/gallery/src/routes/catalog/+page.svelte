@@ -48,6 +48,7 @@
 		'src/lib/SheetFeedbackThread.svelte',
 		'src/lib/components/sheet/paper-sheet.svelte',
 		'src/lib/components/sheet/paper-sheet-question-feedback.svelte',
+		'src/lib/components/sheet/paper-sheet-feedback-response-modal.svelte',
 		'src/lib/components/sheet/paper-sheet-feedback-chat.svelte'
 	] as const;
 

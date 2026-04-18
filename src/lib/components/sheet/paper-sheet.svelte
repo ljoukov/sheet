@@ -18,6 +18,7 @@
 		SPARK_ATTACHMENT_UNSUPPORTED_MESSAGE,
 		isSparkSupportedClientFile
 	} from '../../spark/attachments.js';
+	import PaperSheetFeedbackResponseModal from './paper-sheet-feedback-response-modal.svelte';
 	import PaperSheetQuestionFeedback from './paper-sheet-question-feedback.svelte';
 	import { formatQuestionMarksLabel, shouldShowQuestionFeedback } from './question-review.js';
 	import type {
@@ -27,6 +28,7 @@
 		PaperSheetComposerAttachmentDraft,
 		PaperSheetContentSection,
 		PaperSheetData,
+		PaperSheetFeedbackTurn,
 		PaperSheetFeedbackThread,
 		PaperSheetHookSection,
 		PaperSheetMockReview,
@@ -49,6 +51,13 @@
 		sectionId: string;
 		question: PaperSheetQuestion;
 		nested?: boolean;
+	};
+
+	type PaperSheetFeedbackResponseContext = {
+		questionKey: string;
+		questionLabel: string;
+		question: PaperSheetQuestion;
+		review: PaperSheetQuestionReview;
 	};
 
 	type PaperSheetReviewMode = 'none' | 'mock' | 'live';
@@ -690,6 +699,7 @@
 	let feedbackRequestTokens = $state<Record<string, number>>({});
 	let openFeedbackCards = $state<Record<string, boolean>>({});
 	let followUpComposerQuestions = $state<Record<string, boolean>>({});
+	let activeFeedbackResponse = $state<PaperSheetFeedbackResponseContext | null>(null);
 	let openSections = $state<Record<string, boolean>>(initialOpenSections);
 	let activeMatchTerms = $state<Record<string, string | null>>({});
 	let previousFeedbackThreadStatuses: Record<
@@ -721,6 +731,7 @@
 		feedbackRequestTokens = {};
 		openFeedbackCards = {};
 		followUpComposerQuestions = {};
+		activeFeedbackResponse = null;
 		openSections = createOpenSections(sheet);
 		activeMatchTerms = {};
 		previousFeedbackThreadStatuses = {};
@@ -814,6 +825,7 @@
 		feedbackRequestTokens = {};
 		openFeedbackCards = {};
 		followUpComposerQuestions = {};
+		activeFeedbackResponse = null;
 		checked = true;
 	}
 
@@ -834,6 +846,7 @@
 		feedbackRequestTokens = {};
 		openFeedbackCards = {};
 		followUpComposerQuestions = {};
+		activeFeedbackResponse = null;
 		openSections = createOpenSections(sheet);
 	}
 
@@ -1019,6 +1032,124 @@
 			...followUpComposerQuestions,
 			[questionKey]: true
 		};
+	}
+
+	function openFeedbackResponse(context: PaperSheetFeedbackResponseContext): void {
+		openFeedbackCards = {
+			...openFeedbackCards,
+			[context.questionKey]: true
+		};
+		activeFeedbackResponse = context;
+	}
+
+	function closeFeedbackResponse(): void {
+		activeFeedbackResponse = null;
+	}
+
+	function buildFeedbackDisplayThread(
+		review: PaperSheetQuestionReview,
+		thread: PaperSheetFeedbackThread | null
+	): PaperSheetFeedbackTurn[] {
+		return [
+			{
+				id: `${review.label ?? 'review-note'}-initial`,
+				speaker: 'tutor',
+				text: review.note
+			},
+			...(thread?.turns ?? [])
+		];
+	}
+
+	function buildFeedbackQuestionPrompt(question: PaperSheetQuestion): string {
+		switch (question.type) {
+			case 'fill':
+				return [question.prompt, question.conjunction, question.after]
+					.filter((part): part is string => (part?.trim().length ?? 0) > 0)
+					.join(' ___ ');
+			case 'cloze':
+			case 'answer_bank':
+				return question.segments.join(' ___ ');
+			case 'mcq':
+			case 'lines':
+			case 'calc':
+			case 'match':
+			case 'spelling':
+			case 'flow':
+				return question.prompt;
+		}
+	}
+
+	function sortedAnswerEntries(answers: Record<string, string>): Array<[string, string]> {
+		return Object.entries(answers)
+			.filter(([, value]) => value.trim().length > 0)
+			.sort(([left], [right]) => {
+				const leftNumber = Number(left);
+				const rightNumber = Number(right);
+				if (Number.isFinite(leftNumber) && Number.isFinite(rightNumber)) {
+					return leftNumber - rightNumber;
+				}
+				return left.localeCompare(right);
+			});
+	}
+
+	function formatAnswerList(lines: string[]): string {
+		const visibleLines = lines.filter((line) => line.trim().length > 0);
+		if (visibleLines.length === 0) {
+			return 'No answer recorded.';
+		}
+		if (visibleLines.length === 1) {
+			return visibleLines[0] ?? 'No answer recorded.';
+		}
+		return visibleLines.map((line) => `- ${line}`).join('\n');
+	}
+
+	function formatIndexedAnswerSummary(questionKey: string): string {
+		return formatAnswerList(
+			sortedAnswerEntries(getObjectAnswer(questionKey)).map(
+				([index, value]) => `${(Number(index) + 1).toString()}. ${value}`
+			)
+		);
+	}
+
+	function formatFeedbackAnswerSummary(questionKey: string, question: PaperSheetQuestion): string {
+		switch (question.type) {
+			case 'fill':
+			case 'cloze':
+			case 'spelling':
+				return formatIndexedAnswerSummary(questionKey);
+			case 'answer_bank':
+				return formatAnswerList(
+					sortedAnswerEntries(getObjectAnswer(questionKey)).map(([index, optionId]) => {
+						const optionText = getAnswerBankOptionText(question, optionId) || optionId;
+						return `${(Number(index) + 1).toString()}. ${optionText}`;
+					})
+				);
+			case 'mcq': {
+				const selectedOptionId = resolveMcqSelectedOptionId(question, getTextAnswer(questionKey));
+				const selectedOption = question.options.find((option) => option.id === selectedOptionId);
+				if (!selectedOption) {
+					return 'No answer recorded.';
+				}
+				return selectedOption.label
+					? `${formatMcqOptionLabel(selectedOption)} ${selectedOption.text}`
+					: selectedOption.text;
+			}
+			case 'match':
+				return formatAnswerList(
+					sortedAnswerEntries(getObjectAnswer(questionKey)).map(
+						([term, match]) => `${term} -> ${match}`
+					)
+				);
+			case 'flow':
+				return formatAnswerList(
+					sortedAnswerEntries(getObjectAnswer(questionKey)).map(
+						([boxId, value]) => `${boxId}: ${value}`
+					)
+				);
+			case 'lines':
+			case 'calc':
+				return getTextAnswer(questionKey).trim() || 'No answer recorded.';
+		}
 	}
 
 	async function replyToTutor(
@@ -1893,6 +2024,7 @@
 					runtimeStatus={getFeedbackRuntimeStatus(questionKey)}
 					thinkingText={getFeedbackThinking(questionKey)}
 					assistantDraftText={getFeedbackAssistantDraft(questionKey)}
+					responseMode="modal"
 					showComposer={feedbackRepliesEnabled &&
 						(!resolvedFeedback || isFollowUpComposerOpen(questionKey))}
 					showFollowUpButton={feedbackRepliesEnabled &&
@@ -1902,8 +2034,22 @@
 					onToggle={() => {
 						toggleFeedbackCard(questionKey);
 					}}
+					onOpenResponse={() => {
+						openFeedbackResponse({
+							questionKey,
+							questionLabel: `Question ${questionLabel}`,
+							question,
+							review: questionReview
+						});
+					}}
 					onRequestFollowUp={() => {
 						requestResolvedFollowUp(questionKey);
+						openFeedbackResponse({
+							questionKey,
+							questionLabel: `Question ${questionLabel}`,
+							question,
+							review: questionReview
+						});
 					}}
 					draftAttachments={getFeedbackDraftAttachments(questionKey)}
 					draftAttachmentError={getFeedbackAttachmentError(questionKey)}
@@ -2085,6 +2231,65 @@
 		{/if}
 	</div>
 </div>
+
+{#if activeFeedbackResponse}
+	{@const activeQuestionKey = activeFeedbackResponse.questionKey}
+	{@const activeQuestionReview =
+		getQuestionReview(activeQuestionKey) ?? activeFeedbackResponse.review}
+	{@const activeFeedbackThread = getFeedbackThread(activeQuestionKey)}
+	{@const activeResolvedFeedback = activeFeedbackThread?.status === 'resolved'}
+	{@const activeRuntimeStatus = getFeedbackRuntimeStatus(activeQuestionKey)}
+	{@const activeRuntimeLocked =
+		isFeedbackSending(activeQuestionKey) ||
+		activeRuntimeStatus !== null ||
+		activeFeedbackThread?.status === 'responding'}
+	{@const activeShowComposer =
+		feedbackRepliesEnabled &&
+		(!activeResolvedFeedback || isFollowUpComposerOpen(activeQuestionKey))}
+	<PaperSheetFeedbackResponseModal
+		questionLabel={activeFeedbackResponse.questionLabel}
+		questionPrompt={buildFeedbackQuestionPrompt(activeFeedbackResponse.question)}
+		answerSummary={formatFeedbackAnswerSummary(activeQuestionKey, activeFeedbackResponse.question)}
+		review={activeQuestionReview}
+		displayThread={buildFeedbackDisplayThread(activeQuestionReview, activeFeedbackThread)}
+		processing={isFeedbackSending(activeQuestionKey)}
+		thinkingText={getFeedbackThinking(activeQuestionKey)}
+		assistantDraftText={getFeedbackAssistantDraft(activeQuestionKey)}
+		showAssistantDraft={Boolean(getFeedbackAssistantDraft(activeQuestionKey))}
+		showComposer={activeShowComposer}
+		showFollowUpButton={feedbackRepliesEnabled &&
+			activeResolvedFeedback &&
+			!isFollowUpComposerOpen(activeQuestionKey)}
+		resolvedFollowUpMode={isFollowUpComposerOpen(activeQuestionKey)}
+		draft={getFeedbackDraft(activeQuestionKey)}
+		draftAttachments={getFeedbackDraftAttachments(activeQuestionKey)}
+		draftAttachmentError={getFeedbackAttachmentError(activeQuestionKey)}
+		allowAttachments={feedbackRepliesEnabled}
+		allowTakePhoto={false}
+		placeholder={activeQuestionReview.replyPlaceholder ?? 'Write the corrected response here...'}
+		composerDisabled={!activeShowComposer ||
+			isFeedbackSending(activeQuestionKey) ||
+			activeFeedbackThread?.status === 'responding' ||
+			(activeResolvedFeedback && !isFollowUpComposerOpen(activeQuestionKey))}
+		runtimeLocked={activeRuntimeLocked}
+		onClose={closeFeedbackResponse}
+		onRequestFollowUp={() => {
+			requestResolvedFollowUp(activeQuestionKey);
+		}}
+		onAttachFiles={(files) => {
+			void addFeedbackDraftAttachments(activeQuestionKey, files);
+		}}
+		onRemoveDraftAttachment={(localId) => {
+			removeFeedbackDraftAttachment(activeQuestionKey, localId);
+		}}
+		onDraftChange={(value) => {
+			updateFeedbackDraft(activeQuestionKey, value);
+		}}
+		onReply={(value) => {
+			void replyToTutor(activeQuestionKey, activeQuestionReview, value);
+		}}
+	/>
+{/if}
 
 <style>
 	.paper-sheet {

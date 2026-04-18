@@ -16,6 +16,7 @@
 		runtimeStatus?: SheetRuntimeStatus | null;
 		thinkingText?: string | null;
 		assistantDraftText?: string | null;
+		responseMode?: 'inline' | 'modal';
 		showComposer?: boolean;
 		showFollowUpButton?: boolean;
 		resolvedFollowUpMode?: boolean;
@@ -25,6 +26,7 @@
 		allowTakePhoto?: boolean;
 		questionLabel?: string;
 		onToggle?: (open: boolean) => void;
+		onOpenResponse?: () => void;
 		onRequestFollowUp?: () => void;
 		onAttachFiles?: (files: File[]) => void | Promise<void>;
 		onRemoveDraftAttachment?: (localId: string) => void;
@@ -41,6 +43,7 @@
 		runtimeStatus = null,
 		thinkingText = null,
 		assistantDraftText = null,
+		responseMode = 'inline',
 		showComposer = true,
 		showFollowUpButton = false,
 		resolvedFollowUpMode = false,
@@ -50,6 +53,7 @@
 		allowTakePhoto = false,
 		questionLabel = 'question',
 		onToggle = undefined,
+		onOpenResponse = undefined,
 		onRequestFollowUp = undefined,
 		onAttachFiles = undefined,
 		onRemoveDraftAttachment = undefined,
@@ -73,6 +77,7 @@
 		{runtimeStatus}
 		{thinkingText}
 		{assistantDraftText}
+		{responseMode}
 		{showComposer}
 		{showFollowUpButton}
 		{resolvedFollowUpMode}
@@ -82,6 +87,7 @@
 		{allowTakePhoto}
 		{questionLabel}
 		onToggle={handleToggle}
+		{onOpenResponse}
 		{onRequestFollowUp}
 		{onAttachFiles}
 		{onRemoveDraftAttachment}

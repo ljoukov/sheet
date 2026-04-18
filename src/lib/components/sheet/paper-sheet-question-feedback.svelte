@@ -1,6 +1,8 @@
 <script lang="ts">
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+	import { normalizeTutorMarkdown } from '../../internal/normalize-feedback-markdown.js';
+	import { MarkdownContent } from '../markdown/index.js';
 	import type {
 		PaperSheetComposerAttachmentDraft,
 		PaperSheetFeedbackThread,
@@ -104,6 +106,7 @@
 		runtimeStatus = null,
 		thinkingText = null,
 		assistantDraftText = null,
+		responseMode = 'inline',
 		showComposer = true,
 		showFollowUpButton = false,
 		resolvedFollowUpMode = false,
@@ -113,6 +116,7 @@
 		allowTakePhoto = false,
 		questionLabel,
 		onToggle,
+		onOpenResponse = undefined,
 		onRequestFollowUp = undefined,
 		onAttachFiles = undefined,
 		onRemoveDraftAttachment = undefined,
@@ -127,6 +131,7 @@
 		runtimeStatus?: 'connecting' | 'thinking' | 'responding' | null;
 		thinkingText?: string | null;
 		assistantDraftText?: string | null;
+		responseMode?: 'inline' | 'modal';
 		showComposer?: boolean;
 		showFollowUpButton?: boolean;
 		resolvedFollowUpMode?: boolean;
@@ -136,6 +141,7 @@
 		allowTakePhoto?: boolean;
 		questionLabel: string;
 		onToggle: () => void;
+		onOpenResponse?: () => void;
 		onRequestFollowUp?: () => void;
 		onAttachFiles?: (files: File[]) => void | Promise<void>;
 		onRemoveDraftAttachment?: (localId: string) => void;
@@ -196,6 +202,41 @@
 			? 'Ask a followup about this feedback...'
 			: (review.replyPlaceholder ?? 'Write your reply here...')
 	);
+	const usesResponseModal = $derived(responseMode === 'modal');
+	const threadTurnCount = $derived(thread?.turns.length ?? 0);
+	const responseActionVisible = $derived(
+		usesResponseModal &&
+			(showComposer || showFollowUpButton || runtimeLocked || threadTurnCount > 0)
+	);
+	const responseActionLabel = $derived.by(() => {
+		if (showFollowUpButton) {
+			return 'ask followup';
+		}
+		if (runtimeLocked) {
+			return 'open response';
+		}
+		return 'response';
+	});
+	const threadSummary = $derived.by(() => {
+		if (threadTurnCount === 0) {
+			return null;
+		}
+		const noun = threadTurnCount === 1 ? 'message' : 'messages';
+		if (thread?.status === 'resolved') {
+			return `${threadTurnCount.toString()} ${noun} in a resolved response.`;
+		}
+		if (thread?.status === 'responding' || runtimeLocked) {
+			return `${threadTurnCount.toString()} ${noun}; Spark is working on this response.`;
+		}
+		return `${threadTurnCount.toString()} ${noun} already in this response.`;
+	});
+
+	function handleResponseAction(): void {
+		if (showFollowUpButton) {
+			onRequestFollowUp?.();
+		}
+		onOpenResponse?.();
+	}
 </script>
 
 <section class={`paper-sheet-note ${getToneClass(review, thread)}`}>
@@ -227,30 +268,53 @@
 
 		{#if open}
 			<div class="paper-sheet-note__body">
-				<PaperSheetFeedbackChat
-					{displayThread}
-					{processing}
-					{thinkingText}
-					{assistantDraftText}
-					{showAssistantDraft}
-					{showComposer}
-					{showFollowUpButton}
-					{resolvedFollowUpMode}
-					{draft}
-					{draftAttachments}
-					{draftAttachmentError}
-					{allowAttachments}
-					{allowTakePhoto}
-					placeholder={composerPlaceholder}
-					{questionLabel}
-					{composerDisabled}
-					{runtimeLocked}
-					{onRequestFollowUp}
-					{onAttachFiles}
-					{onRemoveDraftAttachment}
-					{onDraftChange}
-					{onReply}
-				/>
+				{#if usesResponseModal}
+					<div class="paper-sheet-note__review-text">
+						<MarkdownContent
+							markdown={normalizeTutorMarkdown(review.note)}
+							class="paper-sheet-note__review-markdown"
+						/>
+					</div>
+					{#if threadSummary}
+						<p class="paper-sheet-note__thread-summary">{threadSummary}</p>
+					{/if}
+					{#if responseActionVisible}
+						<div class="paper-sheet-note__response-row">
+							<button
+								type="button"
+								class="paper-sheet-note__response-button"
+								onclick={handleResponseAction}
+							>
+								{responseActionLabel}
+							</button>
+						</div>
+					{/if}
+				{:else}
+					<PaperSheetFeedbackChat
+						{displayThread}
+						{processing}
+						{thinkingText}
+						{assistantDraftText}
+						{showAssistantDraft}
+						{showComposer}
+						{showFollowUpButton}
+						{resolvedFollowUpMode}
+						{draft}
+						{draftAttachments}
+						{draftAttachmentError}
+						{allowAttachments}
+						{allowTakePhoto}
+						placeholder={composerPlaceholder}
+						{questionLabel}
+						{composerDisabled}
+						{runtimeLocked}
+						{onRequestFollowUp}
+						{onAttachFiles}
+						{onRemoveDraftAttachment}
+						{onDraftChange}
+						{onReply}
+					/>
+				{/if}
 			</div>
 		{/if}
 	</div>
@@ -445,6 +509,61 @@
 
 	.paper-sheet-note__body {
 		padding: 0 12px 12px;
+	}
+
+	.paper-sheet-note__review-text {
+		font-size: 16px;
+		line-height: 1.65;
+		color: var(--note-text);
+	}
+
+	.paper-sheet-note__review-markdown {
+		font-size: inherit;
+		line-height: inherit;
+	}
+
+	.paper-sheet-note__thread-summary {
+		margin: 0.55rem 0 0;
+		color: var(--note-text-muted);
+		font-size: 0.88rem;
+		font-weight: 650;
+		line-height: 1.4;
+	}
+
+	.paper-sheet-note__response-row {
+		display: flex;
+		justify-content: flex-end;
+		margin-top: 0.8rem;
+	}
+
+	.paper-sheet-note__response-button {
+		min-height: 38px;
+		border: 1px solid color-mix(in srgb, var(--note-left) 34%, transparent);
+		border-radius: 8px;
+		background: var(--note-left);
+		color: #ffffff;
+		padding: 0 0.9rem;
+		font: inherit;
+		font-size: 0.94rem;
+		font-weight: 800;
+		text-transform: lowercase;
+		cursor: pointer;
+		box-shadow: 0 8px 20px -16px var(--note-left);
+		transition:
+			transform 0.16s ease,
+			background 0.16s ease,
+			box-shadow 0.16s ease;
+	}
+
+	.paper-sheet-note__response-button:hover {
+		background: color-mix(in srgb, var(--note-left) 88%, #000000);
+		box-shadow: 0 12px 24px -18px var(--note-left);
+		transform: translateY(-1px);
+	}
+
+	.paper-sheet-note__response-button:focus-visible {
+		outline: 2px solid color-mix(in srgb, var(--note-left) 40%, transparent);
+		outline-offset: 2px;
 	}
 
 	@media (max-width: 720px) {
