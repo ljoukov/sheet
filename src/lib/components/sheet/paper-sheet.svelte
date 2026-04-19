@@ -20,6 +20,7 @@
 	} from '../../spark/attachments.js';
 	import PaperSheetFeedbackResponseModal from './paper-sheet-feedback-response-modal.svelte';
 	import PaperSheetQuestionFeedback from './paper-sheet-question-feedback.svelte';
+	import { resolveBadgeLabel } from './question-label.js';
 	import { formatQuestionMarksLabel, shouldShowQuestionFeedback } from './question-review.js';
 	import type {
 		PaperSheetAnswerBankQuestion,
@@ -212,7 +213,7 @@
 	}
 
 	function getQuestionBadgeLabel(questionKey: string, question: PaperSheetQuestion): string {
-		return question.badgeLabel ?? getDisplayedQuestionLabel(questionKey, question);
+		return resolveBadgeLabel(question) ?? getDisplayedQuestionLabel(questionKey, question);
 	}
 
 	function isFlowRowItemBox(
@@ -2166,13 +2167,14 @@
 
 					{#each section.questions ?? [] as entry (`${section.id}-${entry.id}`)}
 						{#if isPaperSheetQuestionGroup(entry)}
+							{@const groupBadgeLabel = resolveBadgeLabel(entry)}
 							<div class="paper-sheet__question-group">
 								<div
-									class={`paper-sheet__question-group-main ${entry.displayNumber ? 'has-number' : 'is-unnumbered'}`}
+									class={`paper-sheet__question-group-main ${groupBadgeLabel ? 'has-number' : 'is-unnumbered'}`}
 								>
-									{#if entry.displayNumber}
+									{#if groupBadgeLabel}
 										<div class="paper-sheet__question-number paper-sheet__question-number--group">
-											{entry.displayNumber}
+											{groupBadgeLabel}
 										</div>
 									{/if}
 									<div class="paper-sheet__question-group-body">
