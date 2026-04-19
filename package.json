@@ -1,6 +1,6 @@
 {
 	"name": "@ljoukov/sheet",
-	"version": "0.3.4",
+	"version": "0.3.5",
 	"description": "Svelte components for paper-style worksheets, reviewed answer sheets, and question-level feedback threads.",
 	"license": "MIT",
 	"repository": {
