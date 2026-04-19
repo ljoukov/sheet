@@ -40,6 +40,76 @@ const LANGUAGE_LABELS = new Map<string, string>([
 const INLINE_PAREN_MATH_RULE = /^\\\(((?:\\.|[^\\\n])+?)\\\)/;
 const INLINE_BRACKET_MATH_RULE = /^\\\[(((?:\\.|[^\\\n])+?))\\\]/;
 const BLOCK_BRACKET_MATH_RULE = /^\\\[\n((?:\\[^]|[^\\])+?)\n\\\](?:\n|$)/;
+const SVG_SNIPPET_RULE = /<svg\b[\s\S]*?<\/svg>/giu;
+const SVG_TOKEN_RULE = /<!--[\s\S]*?-->|<[^>]+>|[^<]+/gu;
+const SVG_ATTR_RULE = /([^\s=/<>]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/gu;
+const SAFE_SVG_TAGS = new Set([
+	'svg',
+	'g',
+	'path',
+	'rect',
+	'circle',
+	'ellipse',
+	'line',
+	'polyline',
+	'polygon',
+	'text',
+	'tspan',
+	'defs',
+	'lineargradient',
+	'radialgradient',
+	'stop'
+]);
+const SAFE_SVG_ATTRIBUTES = new Set([
+	'aria-hidden',
+	'aria-label',
+	'class',
+	'clip-rule',
+	'cx',
+	'cy',
+	'd',
+	'dominant-baseline',
+	'fill',
+	'fill-opacity',
+	'fill-rule',
+	'focusable',
+	'font-family',
+	'font-size',
+	'font-style',
+	'font-weight',
+	'height',
+	'id',
+	'offset',
+	'opacity',
+	'points',
+	'r',
+	'role',
+	'rx',
+	'ry',
+	'stop-color',
+	'stop-opacity',
+	'stroke',
+	'stroke-dasharray',
+	'stroke-dashoffset',
+	'stroke-linecap',
+	'stroke-linejoin',
+	'stroke-opacity',
+	'stroke-width',
+	'text-anchor',
+	'transform',
+	'viewbox',
+	'width',
+	'x',
+	'x1',
+	'x2',
+	'xml:space',
+	'xmlns',
+	'y',
+	'y1',
+	'y2'
+]);
+const UNSAFE_SVG_CONTENT_RULE =
+	/<\s*(?:script|foreignobject|iframe|object|embed|image|use|animate|animatemotion|animatetransform|set|style|a)\b/iu;
 
 marked.setOptions({ breaks: true, gfm: true });
 marked.use(
@@ -111,6 +181,169 @@ function sanitizeUrl(value: string, kind: 'link' | 'image'): string | null {
 
 function renderTitleAttribute(title: string | null | undefined): string {
 	return title ? ` title="${escapeHtml(title)}"` : '';
+}
+
+function sanitizeSvgAttributeValue(value: string): string | null {
+	if (/[<>`]/u.test(value)) {
+		return null;
+	}
+	const compact = value.replace(/\s+/gu, '').toLowerCase();
+	if (compact.includes('javascript:')) {
+		return null;
+	}
+	if (/url\((?!#)/iu.test(compact)) {
+		return null;
+	}
+	return escapeHtml(value);
+}
+
+function sanitizeSvgAttributes(rawAttributes: string): string | null {
+	let attributes = '';
+	let consumedLength = 0;
+	SVG_ATTR_RULE.lastIndex = 0;
+
+	for (const match of rawAttributes.matchAll(SVG_ATTR_RULE)) {
+		const rawBefore = rawAttributes.slice(consumedLength, match.index);
+		if (rawBefore.trim().length > 0) {
+			return null;
+		}
+		consumedLength = (match.index ?? 0) + match[0].length;
+
+		const rawName = match[1] ?? '';
+		if (!/^[A-Za-z_:][A-Za-z0-9_.:-]*$/u.test(rawName)) {
+			return null;
+		}
+		const normalizedName = rawName.toLowerCase();
+		if (normalizedName.startsWith('on') || normalizedName.includes('href')) {
+			return null;
+		}
+		if (!SAFE_SVG_ATTRIBUTES.has(normalizedName)) {
+			continue;
+		}
+
+		const rawValue = match[2] ?? match[3] ?? match[4] ?? '';
+		if (rawValue.length === 0) {
+			attributes += ` ${escapeHtml(rawName)}`;
+			continue;
+		}
+		const safeValue = sanitizeSvgAttributeValue(rawValue);
+		if (safeValue === null) {
+			return null;
+		}
+		attributes += ` ${escapeHtml(rawName)}="${safeValue}"`;
+	}
+
+	if (rawAttributes.slice(consumedLength).trim().length > 0) {
+		return null;
+	}
+
+	return attributes;
+}
+
+function renderSafeSvg(raw: string): string | null {
+	const trimmed = raw.trim();
+	if (!/^<svg(?:\s|>)/iu.test(trimmed) || !/<\/svg>\s*$/iu.test(trimmed)) {
+		return null;
+	}
+	if (UNSAFE_SVG_CONTENT_RULE.test(trimmed)) {
+		return null;
+	}
+
+	let output = '';
+	let depth = 0;
+	let sawSvg = false;
+	const tokens = trimmed.match(SVG_TOKEN_RULE) ?? [];
+
+	for (const token of tokens) {
+		if (token.startsWith('<!--')) {
+			continue;
+		}
+		if (!token.startsWith('<')) {
+			if ((!sawSvg || depth === 0) && token.trim().length > 0) {
+				return null;
+			}
+			output += escapeHtml(token);
+			continue;
+		}
+		if (/^<\s*[!?]/u.test(token)) {
+			return null;
+		}
+
+		const closingMatch = token.match(/^<\s*\/\s*([A-Za-z][A-Za-z0-9_.:-]*)\s*>$/u);
+		if (closingMatch) {
+			const tagName = (closingMatch[1] ?? '').toLowerCase();
+			if (!SAFE_SVG_TAGS.has(tagName)) {
+				return null;
+			}
+			depth -= 1;
+			if (depth < 0) {
+				return null;
+			}
+			output += `</${tagName}>`;
+			continue;
+		}
+
+		const openingMatch = token.match(/^<\s*([A-Za-z][A-Za-z0-9_.:-]*)([\s\S]*?)\s*(\/?)>$/u);
+		if (!openingMatch) {
+			return null;
+		}
+		const tagName = (openingMatch[1] ?? '').toLowerCase();
+		if (!SAFE_SVG_TAGS.has(tagName)) {
+			return null;
+		}
+		if (!sawSvg && tagName !== 'svg') {
+			return null;
+		}
+		if (sawSvg && depth === 0) {
+			return null;
+		}
+		sawSvg = true;
+
+		const attributes = sanitizeSvgAttributes(openingMatch[2] ?? '');
+		if (attributes === null) {
+			return null;
+		}
+		const selfClosing = openingMatch[3] === '/';
+		output += `<${tagName}${attributes}${selfClosing ? ' />' : '>'}`;
+		if (!selfClosing) {
+			depth += 1;
+		}
+	}
+
+	if (!sawSvg || depth !== 0) {
+		return null;
+	}
+
+	return `<span class="markdown-svg-figure" role="figure">${output}</span>`;
+}
+
+type SafeSvgExtraction = { markdown: string; snippets: string[] };
+
+function extractSafeSvgSnippets(markdown: string): SafeSvgExtraction {
+	const snippets: string[] = [];
+	const nextMarkdown = markdown.replace(SVG_SNIPPET_RULE, (raw) => {
+		const rendered = renderSafeSvg(raw);
+		if (!rendered) {
+			return raw;
+		}
+		const index = snippets.push(rendered) - 1;
+		return `\n\nSHEET_SVG_PLACEHOLDER_${index}\n\n`;
+	});
+	return { markdown: nextMarkdown, snippets };
+}
+
+function restoreSafeSvgSnippets(html: string, snippets: string[]): string {
+	let restored = html;
+	for (let index = 0; index < snippets.length; index += 1) {
+		const placeholder = `SHEET_SVG_PLACEHOLDER_${index}`;
+		const snippet = snippets[index] ?? '';
+		restored = restored
+			.replaceAll(`<p>${placeholder}</p>`, snippet)
+			.replaceAll(`<p>${escapeHtml(placeholder)}</p>`, snippet)
+			.replaceAll(placeholder, snippet)
+			.replaceAll(escapeHtml(placeholder), snippet);
+	}
+	return restored;
 }
 
 function isImageOnlyLink(tokens: Tokens.Link['tokens']): boolean {
@@ -258,7 +491,7 @@ function parseCodeSpanMath(value: string): CodeSpanMath | null {
 }
 
 const renderer = new marked.Renderer();
-renderer.html = ({ text }) => escapeHtml(text);
+renderer.html = ({ text }) => renderSafeSvg(text) ?? escapeHtml(text);
 renderer.codespan = (token) => {
 	const code = typeof token.text === 'string' ? token.text : '';
 	const math = parseCodeSpanMath(code);
@@ -469,9 +702,10 @@ function normalizeDisplayMathBlocks(markdown: string): string {
 }
 
 export function renderMarkdown(markdown: string): string {
-	const normalized = normalizeDisplayMathBlocks(normalizeLatexLists(markdown));
+	const { markdown: svgSafeMarkdown, snippets } = extractSafeSvgSnippets(markdown);
+	const normalized = normalizeDisplayMathBlocks(normalizeLatexLists(svgSafeMarkdown));
 	const parsed = marked.parse(normalized, { renderer });
-	return typeof parsed === 'string' ? parsed : '';
+	return typeof parsed === 'string' ? restoreSafeSvgSnippets(parsed, snippets) : '';
 }
 
 export function renderMarkdownInline(markdown: string): string {

@@ -251,6 +251,24 @@
 		color: var(--markdown-figure-caption, var(--markdown-figure-caption-default));
 	}
 
+	:global(.markdown-content .markdown-svg-figure) {
+		display: block;
+		width: fit-content;
+		max-width: 100%;
+		margin: 0.85rem 0;
+		overflow-x: auto;
+		border: 1px solid var(--markdown-figure-border, var(--markdown-figure-border-default));
+		border-radius: 8px;
+		background: #fff;
+		box-shadow: var(--markdown-figure-shadow, var(--markdown-figure-shadow-default));
+	}
+
+	:global(.markdown-content .markdown-svg-figure svg) {
+		display: block;
+		max-width: min(100%, 720px);
+		height: auto;
+	}
+
 	:global(.markdown-content a.markdown-figure-link) {
 		position: relative;
 		display: block;
