@@ -3035,10 +3035,6 @@
 		cursor: default;
 	}
 
-	.paper-sheet__mcq-option.is-selected {
-		font-weight: 600;
-	}
-
 	.paper-sheet__mcq-radio {
 		display: flex;
 		height: 18px;
